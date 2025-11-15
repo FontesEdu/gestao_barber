@@ -1,6 +1,3 @@
 from django.contrib import admin
-from .models import HorarioDisponivel
+from .models import *
 
-@admin.register(HorarioDisponivel)
-class HorarioDisponivelAdmin(admin.ModelAdmin):
-    list_display = ['horario']
