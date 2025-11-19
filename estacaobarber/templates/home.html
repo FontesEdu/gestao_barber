@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estação Barber - Barbearia Premium</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+
+        /* Header/Navbar */
+        header {
+            background: #0a0a0a;
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffa500;
+            letter-spacing: 1px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #ffa500;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 100px 20px;
+            text-align: center;
+            min-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 40px;
+            max-width: 600px;
+            opacity: 0.95;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: #ffa500;
+            color: #0a0a0a;
+            padding: 16px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 165, 0, 0.4);
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 165, 0, 0.6);
+            background: #ff9500;
+        }
+
+        .cta-button:active {
+            transform: translateY(0);
+        }
+
+        /* Sobre Section */
+        .sobre {
+            max-width: 1200px;
+            margin: 80px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .sobre h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        .sobre p {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 16px;
+            line-height: 1.8;
+        }
+
+        .sobre-img {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 400px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* Serviços Section */
+        .servicos {
+            background: #f8f9fa;
+            padding: 80px 20px;
+        }
+
+        .servicos-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .servicos h2 {
+            font-size: 36px;
+            text-align: center;
+            margin-bottom: 60px;
+            color: #1a1a1a;
+        }
+
+        .servicos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .servico-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .servico-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+        }
+
+        .servico-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .servico-card h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+        }
+
+        .servico-card p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Contatos Section */
+        .contatos {
+            padding: 80px 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .contatos-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .contatos h2 {
+            font-size: 36px;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .contatos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            text-align: center;
+        }
+
+        .contato-item h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: #ffa500;
+        }
+
+        .contato-item p {
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        /* Footer */
+        footer {
+            background: #0a0a0a;
+            color: #666;
+            text-align: center;
+            padding: 30px 20px;
+            border-top: 1px solid #333;
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            nav a {
+                margin-left: 0;
+                margin: 0 15px;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            .sobre {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .sobre h2,
+            .servicos h2,
+            .contatos h2 {
+                font-size: 28px;
+            }
+
+            .servicos-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contatos-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero {
+                padding: 60px 20px;
+                min-height: auto;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+                margin-bottom: 16px;
+            }
+
+            .hero p {
+                font-size: 14px;
+                margin-bottom: 30px;
+            }
+
+            .cta-button {
+                padding: 14px 32px;
+                font-size: 14px;
+            }
+
+            .sobre {
+                margin: 60px auto;
+            }
+
+            .sobre-img {
+                height: 300px;
+            }
+
+            nav a {
+                display: none;
+            }
+
+            .servicos,
+            .contatos {
+                padding: 60px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="navbar">
+            <div class="logo">✂ ESTAÇÃO BARBER</div>
+            <nav>
+                <a href="#sobre">Sobre</a>
+                <a href="#servicos">Serviços</a>
+                <a href="#contatos">Contatos</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Estação Barber</h1>
+        <p>Horários de funcionamento de 08h às 11h e de 14h às 19h.</p>
+        <a href="{% url 'tela_agendamento' %}" class="cta-button">Agendar Horário</a>
+    </section>
+
+    <!-- Sobre Section -->
+    <section class="sobre" id="sobre">
+        <div>
+            <h2>Sobre Nós</h2>
+            <p>Bem-vindo à Estação Barber, seu refúgio de estilo e profissionalismo. Somos dedicados em oferecer os melhores serviços de barbearia com foco em qualidade e atendimento excepcional.</p>
+            <p>Nossa equipe é composta por profissionais experientes que dominam todas as técnicas modernas de corte e barba. Cada cliente é tratado com atenção especial para garantir sua satisfação total.</p>
+            <p>Venha conhecer nossa barbearia e experimente a diferença que faz ter profissionais dedicados cuidando de seu estilo pessoal.</p>
+        </div>
+        <div class="sobre-img">
+            Imagem da Barbearia
+        </div>
+    </section>
+
+    <!-- Serviços Section -->
+    <section class="servicos" id="servicos">
+        <div class="servicos-container">
+            <h2>Nossos Serviços</h2>
+            <div class="servicos-grid">
+                <div class="servico-card">
+                    <div class="servico-icon">✂</div>
+                    <h3>Corte Premium</h3>
+                    <p>Cortes modernos com as melhores técnicas e produtos de qualidade superior</p>
+                </div>
+                <div class="servico-card">
+                    <div class="servico-icon">🧔</div>
+                    <h3>Barba Design</h3>
+                    <p>Design e cuidado completo da barba com alinhamento perfeito</p>
+                </div>
+                <div class="servico-card">
+                    <div class="servico-icon">💇</div>
+                    <h3>Penteado</h3>
+                    <p>Penteados estilosos para qualquer ocasião com acabamento profissional</p>
+                </div>
+                <div class="servico-card">
+                    <div class="servico-icon">💆</div>
+                    <h3>Higiene Facial</h3>
+                    <p>Tratamento facial completo para limpeza e hidratação da pele</p>
+                </div>
+                <div class="servico-card">
+                    <div class="servico-icon">✨</div>
+                    <h3>Spa Barba</h3>
+                    <p>Tratamento premium para barba com produtos especializados</p>
+                </div>
+                <div class="servico-card">
+                    <div class="servico-icon">🎯</div>
+                    <h3>Sobrancelha</h3>
+                    <p>Design e modelagem profissional de sobrancelhas</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contatos Section -->
+    <section class="contatos" id="contatos">
+        <div class="contatos-container">
+            <h2>Contatos</h2>
+            <div class="contatos-grid">
+                <div class="contato-item">
+                    <h3>E-mail</h3>
+                    <p>email@estacaobarber.com</p>
+                </div>
+                <div class="contato-item">
+                    <h3>WhatsApp</h3>
+                    <p>(00) 00000-0000</p>
+                </div>
+                <div class="contato-item">
+                    <h3>Instagram</h3>
+                    <p>@estacaobarber</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Estação Barber. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

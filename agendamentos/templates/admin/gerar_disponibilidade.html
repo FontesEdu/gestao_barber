@@ -1,0 +1,212 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}Gerar Disponibilidades - Admin{% endblock %}
+
+{% block extrahead %}
+<style>
+    #content {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 40px 20px;
+    }
+
+    .form-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        width: 100%;
+        max-width: 500px;
+    }
+
+    .form-container h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+        font-size: 24px;
+        font-weight: 600;
+    }
+
+    .form-container .form-row {
+        margin-bottom: 20px;
+    }
+
+    .form-container label {
+        display: block;
+        margin-bottom: 8px;
+        color: #555;
+        font-weight: 500;
+        font-size: 14px;
+    }
+
+    .form-container input[type="text"],
+    .form-container input[type="date"],
+    .form-container input[type="time"],
+    .form-container input[type="number"],
+    .form-container select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: border-color 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .form-container input[type="text"]:focus,
+    .form-container input[type="date"]:focus,
+    .form-container input[type="time"]:focus,
+    .form-container input[type="number"]:focus,
+    .form-container select:focus {
+        outline: none;
+        border-color: #000000;
+        box-shadow: 0 0 0 3px rgba(91, 91, 91, 0.1);
+    }
+
+    .form-container .form-group {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .form-container input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-right: 10px;
+        cursor: pointer;
+    }
+
+    .form-container .checkbox-label {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0;
+        cursor: pointer;
+    }
+
+    .form-container .checkbox-label label {
+        margin-bottom: 0;
+        margin-left: 8px;
+    }
+
+    .form-container button {
+        width: 100%;
+        padding: 12px 24px;
+        background: linear-gradient(135deg, #2a2a2a 0%, #5c5c5c 100%);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+
+    .form-container button:hover {
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 600px) {
+        .form-container {
+            padding: 24px;
+        }
+
+        .form-container h1 {
+            font-size: 20px;
+            margin-bottom: 24px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1>Gerar Disponibilidades</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        {% for field in form %}
+            {% if field.field.widget.input_type == "checkbox" %}
+                <div class="form-group">
+                    <div class="checkbox-label">
+                        {{ field }}
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    </div>
+                </div>
+            {% else %}
+                <div class="form-row">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div style="color: #dc2626; font-size: 12px; margin-top: 4px;">
+                            {{ field.errors.0 }}
+                        </div>
+                    {% endif %}
+                    {% if field.help_text %}
+                        <div style="color: #666; font-size: 12px; margin-top: 4px;">
+                            {{ field.help_text|safe }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <button type="submit" class="default">Gerar</button>
+    </form>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Seleciona todos os inputs que contêm "horarios" no name
+        const timeInputs = document.querySelectorAll('input[name*="horarios"]');
+        
+        timeInputs.forEach(input => {
+            // Aceita apenas números
+            input.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                
+                // Limita a 4 dígitos
+                if (value.length > 4) {
+                    value = value.slice(0, 4);
+                }
+                
+                // Formata como HH:MM
+                if (value.length >= 3) {
+                    value = value.slice(0, 2) + ':' + value.slice(2, 4);
+                }
+                
+                e.target.value = value;
+            });
+            
+            // Previne caracteres não numéricos
+            input.addEventListener('keypress', function(e) {
+                if (!/[0-9]/.test(e.key)) {
+                    e.preventDefault();
+                }
+            });
+            
+            // Valida ao sair do campo
+            input.addEventListener('blur', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                
+                if (value.length === 4) {
+                    const hora = parseInt(value.slice(0, 2));
+                    const minuto = parseInt(value.slice(2, 4));
+                    
+                    if (hora > 23 || minuto > 59) {
+                        e.target.value = '';
+                        alert('Por favor, insira uma hora válida (HH:MM)');
+                    }
+                } else if (value.length > 0 && value.length < 4) {
+                    e.target.value = '';
+                    alert('Por favor, insira a hora completa (ex: 18:00)');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

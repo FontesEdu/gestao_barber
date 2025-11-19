@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmar Agendamento</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #1a1a1a;
+            margin-bottom: 30px;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+            text-align: left;
+        }
+
+        .info-box p {
+            font-size: 14px;
+            color: #666;
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .info-box strong {
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #1a1a1a;
+            font-weight: 600;
+            text-align: left;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        input[type="text"],
+        input[type="hidden"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            margin-top: 12px;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 25px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+                margin-bottom: 25px;
+            }
+
+            label {
+                font-size: 13px;
+            }
+
+            input[type="text"] {
+                padding: 10px 14px;
+                font-size: 13px;
+            }
+
+            button[type="submit"] {
+                padding: 14px;
+                font-size: 15px;
+            }
+
+            .info-box {
+                padding: 16px;
+                margin-bottom: 25px;
+            }
+
+            .info-box p {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Confirme seu agendamento</h1>
+
+        <div class="info-box">
+            <p>Data: <strong>{{ data }}</strong></p>
+            <p>Horário: <strong>{{ horario }}</strong></p>
+        </div>
+
+        <form action="{% url 'finalizar_agendamento' %}" method="POST">
+            {% csrf_token %}
+
+            <input type="hidden" name="data" value="{{ data }}">
+            <input type="hidden" name="horario" value="{{ horario }}">
+
+            <div>
+                <label for="nome">Seu nome:</label>
+                <input type="text" id="nome" name="nome" required>
+            </div>
+
+            <div>
+                <label for="telefone">Telefone:</label>
+                <input type="text" id="telefone" name="telefone" required>
+            </div>
+
+            <button type="submit">Confirmar</button>
+        </form>
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            $('#telefone').mask('(00) 00000-0000');
+        });
+    </script>
+</body>
+</html>
