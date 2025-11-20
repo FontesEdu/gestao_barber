@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Disponibilidades</title>
+</head>
+<body>
+    {% extends "admin/change_list.html" %}
+
+    {% block object-tools-items %}
+        {{ block.super }}
+        <li>
+            <a href="gerar/" class="addlink">Gerar Disponibilidades</a>
+        </li>
+    {% endblock %}
+
+</body>
+</html>

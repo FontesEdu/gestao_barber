@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from .forms import ClienteForm
 
 def cadastro_sucesso(request):
     return render(request, 'sucesso.html')
 
+<<<<<<< HEAD
 def cadastrar_cliente(request):
     if request.method == 'POST':
         form = ClienteForm(request.POST)
@@ -14,3 +14,7 @@ def cadastrar_cliente(request):
     else:
         form = ClienteForm()
     return render(request, 'inicial.html', {'form': form})
+=======
+def tela_inicial(request):
+    return render(request, 'home.html')
+>>>>>>> formulario_agendamento
