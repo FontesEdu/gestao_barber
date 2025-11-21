@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -5,429 +6,689 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estação Barber - Barbearia Premium</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #1a1a1a;
-            line-height: 1.6;
-        }
+:root {
+    /* Color Palette */
+    --color-bg-dark: #0a1128;
+    --color-bg-card: #131b35;
+    --color-bg-secondary: #1a2447;
+    --color-bg-muted: #1f2a4d;
+    --color-text-primary: #f9fafb;
+    --color-text-secondary: #a0a8bd;
+    --color-primary: #f59e0b;
+    --color-primary-dark: #d97706;
+    --color-border: #1f2a4d;
+    
+    /* Typography */
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    
+    /* Spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+    --spacing-2xl: 4rem;
+    
+    /* Border Radius */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+}
 
-        /* Header/Navbar */
-        header {
-            background: #0a0a0a;
-            padding: 20px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
+body {
+    font-family: var(--font-sans);
+    background-color: var(--color-bg-dark);
+    color: var(--color-text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
 
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
 
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: #ffa500;
-            letter-spacing: 1px;
-        }
+/* Navigation */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background-color: rgba(10, 17, 40, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--color-border);
+}
 
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin-left: 30px;
-            font-size: 14px;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-sm) var(--spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
 
-        nav a:hover {
-            color: #ffa500;
-        }
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
 
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 100px 20px;
-            text-align: center;
-            min-height: 60vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
+.nav-icon {
+    color: var(--color-primary);
+}
 
-        .hero h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-            line-height: 1.2;
-            font-weight: 700;
-        }
+.nav-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
 
-        .hero p {
-            font-size: 18px;
-            margin-bottom: 40px;
-            max-width: 600px;
-            opacity: 0.95;
-        }
+}
 
-        .cta-button {
-            display: inline-block;
-            background: #ffa500;
-            color: #0a0a0a;
-            padding: 16px 40px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 165, 0, 0.4);
-            border: none;
-            cursor: pointer;
-        }
+a{
+    text-decoration: none;
+}
 
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 165, 0, 0.6);
-            background: #ff9500;
-        }
+.nav-links {
+    display: none;
+    gap: var(--spacing-lg);
+}
 
-        .cta-button:active {
-            transform: translateY(0);
-        }
+.nav-links a {
+    color: var(--color-text-primary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
 
-        /* Sobre Section */
-        .sobre {
-            max-width: 1200px;
-            margin: 80px auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            align-items: center;
-        }
+.nav-links a:hover {
+    color: var(--color-primary);
+}
 
-        .sobre h2 {
-            font-size: 36px;
-            margin-bottom: 20px;
-            color: #1a1a1a;
-        }
+.mobile-menu-btn {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--spacing-xs);
+}
 
-        .sobre p {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 16px;
-            line-height: 1.8;
-        }
+.mobile-menu-btn span {
+    width: 24px;
+    height: 2px;
+    background-color: var(--color-text-primary);
+    transition: all 0.3s ease;
+}
 
-        .sobre-img {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 400px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
-            font-weight: 600;
-        }
+.mobile-menu {
+    display: none;
+    position: fixed;
+    top: 73px;
+    left: 0;
+    right: 0;
+    background-color: var(--color-bg-card);
+    border-bottom: 1px solid var(--color-border);
+    flex-direction: column;
+    padding: var(--spacing-md);
+    gap: var(--spacing-sm);
+    z-index: 40;
+}
 
-        /* Serviços Section */
-        .servicos {
-            background: #f8f9fa;
-            padding: 80px 20px;
-        }
+.mobile-menu.active {
+    display: flex;
+}
 
-        .servicos-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+.mobile-menu a {
+    color: var(--color-text-primary);
+    text-decoration: none;
+    padding: var(--spacing-sm);
+    transition: color 0.3s ease;
+}
 
-        .servicos h2 {
-            font-size: 36px;
-            text-align: center;
-            margin-bottom: 60px;
-            color: #1a1a1a;
-        }
+.mobile-menu a:hover {
+    color: var(--color-primary);
+}
 
-        .servicos-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-        }
+/* Buttons */
+.btn {
+    padding: 0.625rem 1.5rem;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
 
-        .servico-card {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
+.btn-primary {
+    background-color: var(--color-primary);
+    color: var(--color-bg-dark);
+}
 
-        .servico-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
-        }
+.btn-primary:hover {
+    background-color: var(--color-primary-dark);
+    transform: translateY(-2px);
+}
 
-        .servico-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-            display: inline-block;
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+.btn-large {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+}
 
-        .servico-card h3 {
-            font-size: 20px;
-            margin-bottom: 12px;
-            color: #1a1a1a;
-        }
+/* Hero Section */
+.hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 80px;
+}
 
-        .servico-card p {
-            font-size: 14px;
-            color: #666;
-            line-height: 1.6;
-        }
+.hero-bg {
+    position: absolute;
+    inset: 0;
+    background-image: url(../static/img/image01.png);
+    background-size: cover;
+    background-position: center;
+    opacity: 0.3;
+    z-index: 0;
+}
 
-        /* Contatos Section */
-        .contatos {
-            padding: 80px 20px;
-            background: #1a1a1a;
-            color: white;
-        }
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(10, 17, 40, 0.5), rgba(10, 17, 40, 0.8), rgba(10, 17, 40, 1));
+    z-index: 0;
+}
 
-        .contatos-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+.hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: var(--spacing-md);
+}
 
-        .contatos h2 {
-            font-size: 36px;
-            text-align: center;
-            margin-bottom: 60px;
-        }
+.hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+    text-wrap: balance;
+}
 
-        .contatos-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-            text-align: center;
-        }
+.hero-subtitle {
+    font-size: 1.5rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-sm);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
 
-        .contato-item h3 {
-            font-size: 18px;
-            margin-bottom: 12px;
-            color: #ffa500;
-        }
+.hero-text {
+    font-size: 1.25rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-lg);
+}
 
-        .contato-item p {
-            font-size: 14px;
-            color: #ccc;
-        }
+/* About Section */
+.about {
+    padding: 6rem 0;
+    background-color: var(--color-bg-card);
+}
 
-        /* Footer */
-        footer {
-            background: #0a0a0a;
-            color: #666;
-            text-align: center;
-            padding: 30px 20px;
-            border-top: 1px solid #333;
-        }
+.about-grid {
+    display: grid;
+    gap: var(--spacing-xl);
+    align-items: center;
+}
 
-        /* Responsivo */
-        @media (max-width: 768px) {
-            .navbar {
-                flex-direction: column;
-                gap: 20px;
-            }
+.about-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
 
-            nav a {
-                margin-left: 0;
-                margin: 0 15px;
-            }
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+}
 
-            .hero h1 {
-                font-size: 36px;
-            }
+.section-title.centered {
+    text-align: center;
+}
 
-            .hero p {
-                font-size: 16px;
-            }
+.about-text {
+    font-size: 1.125rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
 
-            .sobre {
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
+.about-images {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-sm);
+}
 
-            .sobre h2,
-            .servicos h2,
-            .contatos h2 {
-                font-size: 28px;
-            }
+.about-img {
+    width: 100%;
+    height: 16rem;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+}
 
-            .servicos-grid {
-                grid-template-columns: 1fr;
-            }
+.about-img-2 {
+    margin-top: var(--spacing-lg);
+}
 
-            .contatos-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+/* Services Section */
+.services {
+    padding: 6rem 0;
+    background-color: var(--color-bg-dark);
+}
 
-        @media (max-width: 480px) {
-            .hero {
-                padding: 60px 20px;
-                min-height: auto;
-            }
+.services-description {
+    text-align: center;
+    font-size: 1.125rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-xl);
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
 
-            .hero h1 {
-                font-size: 28px;
-                margin-bottom: 16px;
-            }
+.services-grid {
+    display: grid;
+    gap: var(--spacing-lg);
+}
 
-            .hero p {
-                font-size: 14px;
-                margin-bottom: 30px;
-            }
+.service-card {
+    background-color: var(--color-bg-card);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    transition: border-color 0.3s ease, transform 0.3s ease;
+}
 
-            .cta-button {
-                padding: 14px 32px;
-                font-size: 14px;
-            }
+.service-card:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-4px);
+}
 
-            .sobre {
-                margin: 60px auto;
-            }
+.service-img {
+    width: 100%;
+    height: 16rem;
+    object-fit: cover;
+}
 
-            .sobre-img {
-                height: 300px;
-            }
+.service-content {
+    padding: var(--spacing-md);
+}
 
-            nav a {
-                display: none;
-            }
+.service-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-sm);
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
 
-            .servicos,
-            .contatos {
-                padding: 60px 20px;
-            }
-        }
+.service-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.service-price {
+    background-color: var(--color-primary);
+    color: var(--color-bg-dark);
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.service-description {
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
+
+/* Contacts Section */
+.contacts {
+    padding: 6rem 0;
+    background-color: var(--color-bg-card);
+}
+
+.contacts-grid {
+    display: grid;
+    gap: var(--spacing-xl);
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.contact-card {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.contact-icon {
+    width: 5rem;
+    height: 5rem;
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--spacing-sm);
+}
+
+.contact-icon svg {
+    color: var(--color-primary);
+}
+
+.contact-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.contact-text {
+    color: var(--color-text-secondary);
+}
+
+.contact-link {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.contact-link:hover {
+    color: var(--color-primary-dark);
+}
+
+/* Footer */
+.footer {
+    padding: var(--spacing-lg) 0;
+    background-color: var(--color-bg-dark);
+    border-top: 1px solid var(--color-border);
+}
+
+.footer-content {
+    text-align: center;
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
+}
+
+.footer-icon {
+    color: var(--color-primary);
+}
+
+.footer-text {
+    color: var(--color-text-secondary);
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+    .nav-links {
+        display: flex;
+    }
+    
+    .mobile-menu-btn {
+        display: none;
+    }
+    
+    .hero-title {
+        font-size: 4.5rem;
+    }
+    
+    .about-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .services-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .contacts-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 767px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.25rem;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+}
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="navbar">
-            <div class="logo">✂ ESTAÇÃO BARBER</div>
-            <nav>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 18L18 6M6 6l12 12"/>
+                    <circle cx="12" cy="12" r="1"/>
+                </svg>
+                <a href=""><span class="nav-title">Estação Barber</span></a>
+            </div>
+            <div class="nav-links">
+                <a href="">Início</a>
                 <a href="#sobre">Sobre</a>
                 <a href="#servicos">Serviços</a>
                 <a href="#contatos">Contatos</a>
-            </nav>
+            </div>
+            <a href="{% url 'tela_agendamento' %}"><button class="btn btn-primary">Agendar Horário</button></a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
-    </header>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#inicio">Início</a>
+        <a href="#sobre">Sobre</a>
+        <a href="#servicos">Serviços</a>
+        <a href="#contatos">Contatos</a>
+    </div>
 
     <!-- Hero Section -->
-    <section class="hero">
-        <h1>Estação Barber</h1>
-        <p>Horários de funcionamento de 08h às 11h e de 14h às 19h.</p>
-        <a href="{% url 'tela_agendamento' %}" class="cta-button">Agendar Horário</a>
+    <section id="inicio" class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">Estação Barber</h1>
+            <p class="hero-subtitle">
+                Horário de funcionamento: Segunda a Sexta das 08:00 às 20:00
+            </p>
+            <p class="hero-text">
+                
+            </p>
+            <a href="{% url 'tela_agendamento' %}"><button class="btn btn-primary btn-large">Agendar Agora</button></a>
+        </div>
     </section>
 
     <!-- Sobre Section -->
-    <section class="sobre" id="sobre">
-        <div>
-            <h2>Sobre Nós</h2>
-            <p>Bem-vindo à Estação Barber, seu refúgio de estilo e profissionalismo. Somos dedicados em oferecer os melhores serviços de barbearia com foco em qualidade e atendimento excepcional.</p>
-            <p>Nossa equipe é composta por profissionais experientes que dominam todas as técnicas modernas de corte e barba. Cada cliente é tratado com atenção especial para garantir sua satisfação total.</p>
-            <p>Venha conhecer nossa barbearia e experimente a diferença que faz ter profissionais dedicados cuidando de seu estilo pessoal.</p>
-        </div>
-        <div class="sobre-img">
-            Imagem da Barbearia
-        </div>
-    </section>
-
-    <!-- Serviços Section -->
-    <section class="servicos" id="servicos">
-        <div class="servicos-container">
-            <h2>Nossos Serviços</h2>
-            <div class="servicos-grid">
-                <div class="servico-card">
-                    <div class="servico-icon">✂</div>
-                    <h3>Corte Premium</h3>
-                    <p>Cortes modernos com as melhores técnicas e produtos de qualidade superior</p>
+    <section id="sobre" class="about">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-content">
+                    <h2 class="section-title">Sobre</h2>
+                    <p class="about-text">
+                        Na Estação Barber, oferecemos mais do que um simples corte de cabelo. Proporcionamos uma experiência completa de cuidado masculino com profissionais altamente qualificados e um ambiente acolhedor.
+                    </p>
+                    <p class="about-text">
+                        Nossa equipe está preparada para atender você com as técnicas mais modernas e produtos de alta qualidade, garantindo que você saia sempre satisfeito e com visual impecável.
+                    </p>
+                    <p class="about-text">
+                        Venha nos visitar e descubra por que somos a barbearia preferida da região. Estilo, tradição e excelência em cada atendimento.
+                    </p>
                 </div>
-                <div class="servico-card">
-                    <div class="servico-icon">🧔</div>
-                    <h3>Barba Design</h3>
-                    <p>Design e cuidado completo da barba com alinhamento perfeito</p>
-                </div>
-                <div class="servico-card">
-                    <div class="servico-icon">💇</div>
-                    <h3>Penteado</h3>
-                    <p>Penteados estilosos para qualquer ocasião com acabamento profissional</p>
-                </div>
-                <div class="servico-card">
-                    <div class="servico-icon">💆</div>
-                    <h3>Higiene Facial</h3>
-                    <p>Tratamento facial completo para limpeza e hidratação da pele</p>
-                </div>
-                <div class="servico-card">
-                    <div class="servico-icon">✨</div>
-                    <h3>Spa Barba</h3>
-                    <p>Tratamento premium para barba com produtos especializados</p>
-                </div>
-                <div class="servico-card">
-                    <div class="servico-icon">🎯</div>
-                    <h3>Sobrancelha</h3>
-                    <p>Design e modelagem profissional de sobrancelhas</p>
+                <div class="about-images">
+                    <img src="{% static 'img/image03.png' %}"" alt="Barbeiro profissional cortando cabelo" class="about-img about-img-1">
+                    <img src="{% static 'img/image02.png' %}" alt="Cuidado profissional com barba" class="about-img about-img-2">
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Contatos Section -->
-    <section class="contatos" id="contatos">
-        <div class="contatos-container">
-            <h2>Contatos</h2>
-            <div class="contatos-grid">
-                <div class="contato-item">
-                    <h3>E-mail</h3>
-                    <p>email@estacaobarber.com</p>
+    <!-- Services Section -->
+    <section id="servicos" class="services">
+        <div class="container">
+            <h2 class="section-title centered">Serviços</h2>
+            <p class="services-description">
+                Conheça nossos principais serviços. Cada um realizado com atenção aos detalhes e produtos de primeira qualidade para garantir o melhor resultado.
+            </p>
+            
+            <div class="services-grid">
+                <!-- Haircut Service -->
+                <div class="service-card">
+                    <img src="{% static 'img/image04.png' %}" alt="Serviço de corte de cabelo" class="service-img">
+                    <div class="service-content">
+                        <div class="service-header">
+                            <h3 class="service-title">CORTE DE CABELO</h3>
+                            <span class="service-price">R$ 45,00</span>
+                        </div>
+                        <p class="service-description">
+                            Corte moderno e estiloso feito por profissionais experientes. Inclui lavagem e finalização.
+                        </p>
+                    </div>
                 </div>
-                <div class="contato-item">
-                    <h3>WhatsApp</h3>
-                    <p>(00) 00000-0000</p>
+
+                <!-- Beard Service -->
+                <div class="service-card">
+                    <img src="{% static 'img/image06.png' %}" alt="Serviço de barba" class="service-img">
+                    <div class="service-content">
+                        <div class="service-header">
+                            <h3 class="service-title">BARBA</h3>
+                            <span class="service-price">R$ 35,00</span>
+                        </div>
+                        <p class="service-description">
+                            Aparar e modelagem completa da barba com toalha quente e produtos especiais para hidratação.
+                        </p>
+                    </div>
                 </div>
-                <div class="contato-item">
-                    <h3>Instagram</h3>
-                    <p>@estacaobarber</p>
+
+                <!-- Combo Service -->
+                <div class="service-card">
+                    <img src="{% static 'img/image05.png' %}" alt="Serviço completo" class="service-img">
+                    <div class="service-content">
+                        <div class="service-header">
+                            <h3 class="service-title">CORTE & BARBA</h3>
+                            <span class="service-price">R$ 70,00</span>
+                        </div>
+                        <p class="service-description">
+                            Pacote completo com corte de cabelo e barba. O melhor custo-benefício para seu visual.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contatos" class="contacts">
+        <div class="container">
+            <h2 class="section-title centered">Contatos</h2>
+            
+            <div class="contacts-grid">
+                <!-- Email -->
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="4" width="20" height="16" rx="2"/>
+                            <path d="M22 7l-10 7L2 7"/>
+                        </svg>
+                    </div>
+                    <h3 class="contact-title">E-mail</h3>
+                    <p class="contact-text">
+                        Tem alguma dúvida? Entre em contato
+                    </p>
+                    <a href="mailto:email@email.com" class="contact-link">
+                        email@email.com
+                    </a>
+                </div>
+
+                <!-- WhatsApp -->
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                    </div>
+                    <h3 class="contact-title">WhatsApp</h3>
+                    <p class="contact-text">
+                        Agende seu horário agora
+                    </p>
+                    <a href="https://wa.me/5500000000000" target="_blank" rel="noopener noreferrer" class="contact-link">
+                        (00) 00000-0000
+                    </a>
+                </div>
+
+                <!-- Instagram -->
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                        </svg>
+                    </div>
+                    <h3 class="contact-title">Instagram</h3>
+                    <p class="contact-text">
+                        Siga-nos nas redes sociais
+                    </p>
+                    <a href="https://instagram.com/estacao_barber" target="_blank" rel="noopener noreferrer" class="contact-link">
+                        @estacao_barber
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer>
-        <p>&copy; 2025 Estação Barber. Todos os direitos reservados.</p>
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <svg class="footer-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 18L18 6M6 6l12 12"/>
+                    <circle cx="12" cy="12" r="1"/>
+                </svg>
+                <span>Estação Barber</span>
+            </div>
+            <p class="footer-text">
+                © <span id="currentYear"></span> Estação Barber. Todos os direitos reservados.
+            </p>
+        </div>
     </footer>
 
     <script>

@@ -3,6 +3,7 @@ from .models import *
 from datetime import datetime, date, time, timedelta
 from django.http import JsonResponse, HttpResponse
 from django.db.models import Count
+from django_ratelimit.decorators import ratelimit
 
 
 def tela_agendamento(request):
@@ -63,7 +64,7 @@ def confirmar_agendamento(request):
         "horario": horario
     })
 
-
+@ratelimit(key='ip', rate='3/d', block=True)
 def finalizar_agendamento(request):
     if request.method == "POST":
         nome = request.POST.get("nome")
@@ -89,5 +90,6 @@ def finalizar_agendamento(request):
             "data": data,
             "horario": horario
         })
+
 
     return HttpResponse("Método inválido.")
