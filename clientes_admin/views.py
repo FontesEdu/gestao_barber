@@ -1,20 +1,20 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django_ratelimit.decorators import ratelimit
-
-def cadastro_sucesso(request):
-    return render(request, 'sucesso.html')
-
-
-def cadastrar_cliente(request):
-    if request.method == 'POST':
-        form = ClienteForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('cadastro_sucesso')  
-    else:
-        form = ClienteForm()
-    return render(request, 'inicial.html', {'form': form})
+from .models import *
     
 def tela_inicial(request):
-    return render(request, 'home.html')
+    categorias = Categoria.objects.all()
+    fotos = [categoria.foto.url for categoria in categorias if categoria.foto]
+    return render(request, "home.html", {"categorias": categorias}, {"fotos": fotos})
+
+def servicos_por_categoria(request, categoria_id):
+    categoria = Categoria.objects.get(id=categoria_id)
+    servicos = Servico.objects.filter(categorias=categoria)
+    return render(request, "servicos_por_categoria.html", {
+        "categoria": categoria,
+        "servicos": servicos
+    })
+
+def detalhes_servico(request, id):
+    servico = Servico.objects.get(id=id)
+    return render(request, "detalhes_servico.html", {"servico": servico}) 

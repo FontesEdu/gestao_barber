@@ -18,7 +18,7 @@ def tela_agendamento(request):
     import json
     datas_formatadas = json.dumps([d.strftime("%Y-%m-%d") for d in datas_disponiveis])
 
-    return render(request, "telaAgendamento.html", {
+    return render(request, "ver_calendario.html", {
         "datas_disponiveis": datas_formatadas
     })
 
@@ -28,7 +28,7 @@ def ver_disponibilidade(request):
     data_selecionada = request.GET.get('data')
 
     if not data_selecionada:
-        return render(request, 'telaAgendamento.html')
+        return render(request, 'ver_calendario.html')
 
     disponibilidades = Disponibilidade.objects.filter(data=data_selecionada)
 
@@ -44,7 +44,7 @@ def ver_disponibilidade(request):
 
     return render(
         request,
-        'verDisponibilidade.html',
+        'ver_disponibilidade.html',
         {
             'data_selecionada': data_selecionada,
             'horarios_livres': horarios_livres

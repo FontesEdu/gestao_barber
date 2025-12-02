@@ -1,0 +1,615 @@
+{% load static %}<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horários Disponíveis - Estação Barber</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Color Palette */
+            --color-bg-dark: #0a1128;
+            --color-bg-card: #131b35;
+            --color-bg-secondary: #1a2447;
+            --color-bg-muted: #1f2a4d;
+            --color-text-primary: #f9fafb;
+            --color-text-secondary: #a0a8bd;
+            --color-primary: #f59e0b;
+            --color-primary-dark: #d97706;
+            --color-border: #1f2a4d;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background-color: rgba(10, 17, 40, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-sm) var(--spacing-md);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .nav-icon {
+            color: var(--color-primary);
+        }
+
+        .nav-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-text-primary);
+        }
+
+        .nav-title a {
+            text-decoration: none;
+            color: var(--color-text-primary);
+            transition: color 0.3s ease;
+        }
+
+        .nav-title a:hover {
+            color: var(--color-primary);
+        }
+
+        .nav-links {
+            display: none;
+            gap: var(--spacing-lg);
+        }
+
+        .nav-links a {
+            color: var(--color-text-primary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .nav-links a:hover {
+            color: var(--color-primary);
+        }
+
+        .mobile-menu-btn {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: var(--spacing-xs);
+        }
+
+        .mobile-menu-btn span {
+            width: 24px;
+            height: 2px;
+            background-color: var(--color-text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-btn.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .mobile-menu-btn.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-btn.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        .btn {
+            padding: 0.625rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: var(--color-bg-dark);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+        }
+
+        .availability-section {
+            padding-top: 120px;
+            padding-bottom: var(--spacing-xl);
+            min-height: 100vh;
+        }
+
+        .availability-card {
+            background-color: var(--color-bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
+            padding: var(--spacing-lg);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .availability-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text-primary);
+            text-align: center;
+        }
+
+        .info-box {
+            background-color: var(--color-bg-secondary);
+            border-left: 4px solid var(--color-primary);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-lg);
+            color: var(--color-text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .time-btn {
+            padding: var(--spacing-md);
+            background-color: var(--color-bg-secondary);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            color: var(--color-text-primary);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .time-btn:hover:not(:disabled) {
+            border-color: var(--color-primary);
+            background-color: rgba(245, 158, 11, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .time-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .time-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-xl);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: var(--spacing-md);
+            opacity: 0.6;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: var(--spacing-md);
+            background-color: var(--color-primary);
+            color: var(--color-bg-dark);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: var(--spacing-md);
+        }
+
+        .submit-btn:hover {
+            background-color: var(--color-primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        .footer {
+            padding: var(--spacing-lg) 0;
+            background-color: var(--color-bg-dark);
+            border-top: 1px solid var(--color-border);
+            margin-top: var(--spacing-xl);
+        }
+
+        .footer-content {
+            text-align: center;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-xs);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .footer-icon {
+            color: var(--color-primary);
+        }
+
+        .footer-text {
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Mobile Menu Styles */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 73px;
+            left: 0;
+            right: 0;
+            background-color: var(--color-bg-card);
+            border-bottom: 1px solid var(--color-border);
+            flex-direction: column;
+            padding: var(--spacing-md);
+            gap: var(--spacing-sm);
+            z-index: 40;
+        }
+
+        .mobile-menu.active {
+            display: flex;
+        }
+
+        .mobile-menu a {
+            color: var(--color-text-primary);
+            text-decoration: none;
+            padding: var(--spacing-sm);
+            transition: color 0.3s ease;
+        }
+
+        .mobile-menu a:hover {
+            color: var(--color-primary);
+        }
+
+        /* Responsive Design */
+        @media (min-width: 768px) {
+            .nav-links {
+                display: flex;
+            }
+
+            .mobile-menu-btn {
+                display: none;
+            }
+
+            .availability-title {
+                font-size: 2.5rem;
+            }
+
+            .time-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: var(--spacing-lg);
+            }
+        }
+
+        @media (max-width: 767px) {
+            .nav-container {
+                padding: var(--spacing-sm) var(--spacing-sm);
+            }
+
+            .nav-title {
+                font-size: 1rem;
+            }
+
+            .btn-primary {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .availability-section {
+                padding-top: 100px;
+                padding-bottom: var(--spacing-lg);
+            }
+
+            .availability-card {
+                padding: var(--spacing-md);
+            }
+
+            .availability-title {
+                font-size: 1.5rem;
+                margin-bottom: var(--spacing-md);
+            }
+
+            .info-box {
+                padding: var(--spacing-sm);
+                font-size: 0.9rem;
+            }
+
+            .time-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: var(--spacing-sm);
+            }
+
+            .time-btn {
+                padding: var(--spacing-sm);
+                font-size: 0.9rem;
+            }
+
+            .submit-btn {
+                padding: var(--spacing-sm);
+                font-size: 0.95rem;
+            }
+
+            .empty-state {
+                padding: var(--spacing-lg);
+            }
+
+            .empty-state-icon {
+                font-size: 2rem;
+            }
+
+            .empty-state p {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-container {
+                padding: 0.75rem var(--spacing-sm);
+                gap: var(--spacing-sm);
+            }
+
+            .nav-title {
+                font-size: 0.9rem;
+            }
+
+            .btn-primary {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .availability-section {
+                padding-top: 90px;
+            }
+
+            .availability-card {
+                padding: var(--spacing-sm);
+                border-radius: var(--radius-md);
+            }
+
+            .availability-title {
+                font-size: 1.25rem;
+                margin-bottom: var(--spacing-sm);
+            }
+
+            .info-box {
+                padding: 0.75rem;
+                font-size: 0.85rem;
+                margin-bottom: var(--spacing-md);
+            }
+
+            .time-grid {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .time-btn {
+                padding: 0.75rem;
+                font-size: 0.85rem;
+                min-height: 44px;
+            }
+
+            .submit-btn {
+                padding: 0.75rem;
+                font-size: 0.9rem;
+                margin-top: var(--spacing-sm);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 18L18 6M6 6l12 12"/>
+                    <circle cx="12" cy="12" r="1"/>
+                </svg>
+                <span class="nav-title"><a href="/">Estação Barber</a></span>
+            </div>
+            <div class="nav-links">
+                <a href="/">Início</a>
+                <a href="/#sobre">Sobre</a>
+                <a href="/#servicos">Serviços</a>
+                <a href="/#contatos">Contatos</a>
+            </div>
+            <a href="{% url 'tela_agendamento' %}"><button class="btn btn-primary">Agendar Horário</button></a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="/">Início</a>
+        <a href="/#sobre">Sobre</a>
+        <a href="/#servicos">Serviços</a>
+        <a href="/#contatos">Contatos</a>
+    </div>
+
+    <!-- Main Content -->
+    <section class="availability-section">
+        <div class="container">
+            <div class="availability-card">
+                <h1 class="availability-title" id="dateTitle"></h1>
+
+                {% if horarios_livres %}
+                    <div class="info-box">
+                        Selecione um horário para confirmar seu agendamento
+                    </div>
+
+                    <form action="{% url 'confirmar_agendamento' %}" method="get">
+                        <input type="hidden" name="data" value="{{ data_selecionada }}">
+
+                        <div class="time-grid" id="timeGrid">
+                            {% for horario in horarios_livres %}
+                                <button 
+                                    type="submit" 
+                                    name="horario" 
+                                    value="{{ horario }}"
+                                    class="time-btn"
+                                    data-time="{{ horario }}">
+                                    {{ horario }}
+                                </button>
+                            {% endfor %}
+                        </div>
+                    </form>
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📅</div>
+                        <p>Não há horários disponíveis para esta data.</p>
+                        <p>Por favor, selecione outra data.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <svg class="footer-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 18L18 6M6 6l12 12"/>
+                    <circle cx="12" cy="12" r="1"/>
+                </svg>
+                <span>Estação Barber</span>
+            </div>
+            <p class="footer-text">
+                © <span id="currentYear"></span> Estação Barber. Todos os direitos reservados.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        function formatarDataBrasileira(data) {
+            const meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+                           'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+            const diasSemana = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
+            
+            const [ano, mes, dia] = data.split('-');
+            const dateObj = new Date(ano, parseInt(mes) - 1, dia);
+            const nomeDia = diasSemana[dateObj.getDay()];
+            const nomeMes = meses[parseInt(mes) - 1];
+            
+            return `Horários disponíveis para ${nomeDia}, ${dia} de ${nomeMes} de ${ano}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const dataSelecionada = "{{ data_selecionada }}";
+            const dateTitle = document.getElementById('dateTitle');
+            if (dateTitle && dataSelecionada) {
+                dateTitle.textContent = formatarDataBrasileira(dataSelecionada);
+            }
+
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+            const hoje = new Date();
+            const [ano, mes, dia] = dataSelecionada.split("-").map(Number);
+            const dataSel = new Date(ano, mes - 1, dia);
+
+            const mesmaData =
+                dataSel.getFullYear() === hoje.getFullYear() &&
+                dataSel.getMonth() === hoje.getMonth() &&
+                dataSel.getDate() === hoje.getDate();
+
+            if (mesmaData) {
+                const horaAtual = hoje.getHours();
+                const minAtual = hoje.getMinutes();
+                const botoes = document.querySelectorAll(".time-btn");
+
+                botoes.forEach(btn => {
+                    const horario = btn.textContent.trim();
+                    const [h, m] = horario.split(":").map(Number);
+
+                    if (h < horaAtual || (h === horaAtual && m <= minAtual)) {
+                        btn.disabled = true;
+                    }
+                });
+            }
+
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('active');
+                    mobileMenuBtn.classList.toggle('active');
+                });
+
+                document.querySelectorAll('.mobile-menu a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenu.classList.remove('active');
+                        mobileMenuBtn.classList.remove('active');
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
