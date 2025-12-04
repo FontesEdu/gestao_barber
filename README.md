@@ -1,9 +1,9 @@
-# gestao_barber
+# Gestão Barber
 Projeto de gerenciamento de agendamento de horários para barbearia.
 
 ## Visão rápida
 
-Este repositório contém uma aplicação Django para gerenciar agendamentos de uma barbearia.
+Este repositório contém uma aplicação Django para gerenciar uma barbearia.
 
 ## Pré-requisitos
 

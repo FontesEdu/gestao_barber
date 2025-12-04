@@ -3,12 +3,20 @@ from datetime import datetime, date, timedelta
 from django.http import JsonResponse, HttpResponse
 from django.db.models import Count
 from django_ratelimit.decorators import ratelimit
-from .models import Disponibilidade, Agendamento
+import json
 
 
 # Tela inicial onde o cliente escolhe a data
 def tela_agendamento(request):
-    # Busca as datas que possuem pelo menos uma disponibilidade
+    from django.utils import timezone
+
+    hoje = timezone.localdate()
+
+    horarios_hoje = list(
+        Disponibilidade.objects.filter(data=hoje)
+        .values_list("horario", flat=True)
+    )
+
     datas_disponiveis = (
         Disponibilidade.objects
         .values('data')
@@ -21,18 +29,18 @@ def tela_agendamento(request):
     # Converte datas para string JSON
     datas_formatadas = json.dumps([d.strftime("%Y-%m-%d") for d in datas_disponiveis])
 
-    return render(request, "telaAgendamento.html", {
-        "datas_disponiveis": datas_formatadas
+    return render(request, "ver_calendario.html", {
+        "datas_disponiveis": datas_formatadas,
+        "horarios_hoje": json.dumps([str(h) for h in horarios_hoje])  # 🔥 AQUI
     })
 
 
-# Exibe horários livres da data selecionada
 def ver_disponibilidade(request):
     # Pega a data escolhida pelo usuário
     data_selecionada = request.GET.get('data')
 
     if not data_selecionada:
-        return render(request, 'telaAgendamento.html')
+        return render(request, 'ver_calendario.html')
 
     # Busca todos os horários cadastrados para o dia
     disponibilidades = Disponibilidade.objects.filter(data=data_selecionada)
@@ -52,7 +60,7 @@ def ver_disponibilidade(request):
 
     return render(
         request,
-        'verDisponibilidade.html',
+        'ver_disponibilidade.html',
         {
             'data_selecionada': data_selecionada,
             'horarios_livres': horarios_livres
