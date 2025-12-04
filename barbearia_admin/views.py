@@ -4,9 +4,19 @@ from datetime import datetime, date, time, timedelta
 from django.http import JsonResponse, HttpResponse
 from django.db.models import Count
 from django_ratelimit.decorators import ratelimit
+import json
 
 
 def tela_agendamento(request):
+    from django.utils import timezone
+
+    hoje = timezone.localdate()
+
+    horarios_hoje = list(
+        Disponibilidade.objects.filter(data=hoje)
+        .values_list("horario", flat=True)
+    )
+
     datas_disponiveis = (
         Disponibilidade.objects
         .values('data')
@@ -19,9 +29,9 @@ def tela_agendamento(request):
     datas_formatadas = json.dumps([d.strftime("%Y-%m-%d") for d in datas_disponiveis])
 
     return render(request, "ver_calendario.html", {
-        "datas_disponiveis": datas_formatadas
+        "datas_disponiveis": datas_formatadas,
+        "horarios_hoje": json.dumps([str(h) for h in horarios_hoje])  # 🔥 AQUI
     })
-
 
 
 def ver_disponibilidade(request):

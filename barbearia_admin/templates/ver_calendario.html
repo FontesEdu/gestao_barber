@@ -694,7 +694,47 @@
                 day.textContent = i;
                 calendarDays.appendChild(day);
             }
+
         }
+
+        function esconderHojeSeHorarioPassou() {
+            const hojeStr = new Date().toISOString().split("T")[0];
+            const hoje = new Date();
+            const horaAtual = hoje.getHours();
+            const minutoAtual = hoje.getMinutes();
+
+            const horariosHoje = JSON.parse('{{ horarios_hoje|default:"[]"|safe|escapejs }}');
+
+            if (!datasDisponiveis.includes(hojeStr)) {
+                return; 
+            }
+
+            let todosPassados = true;
+
+            horariosHoje.forEach(h => {
+                const [hH, hM] = h.split(":").map(Number);
+
+                if (hH > horaAtual || (hH === horaAtual && hM > minutoAtual)) {
+                    todosPassados = false;
+                }
+            });
+
+            if (todosPassados) {
+                const dias = document.querySelectorAll(".day.available");
+
+                dias.forEach(d => {
+                    if (parseInt(d.textContent) === hoje.getDate() &&
+                        currentDate.getMonth() === hoje.getMonth() &&
+                        currentDate.getFullYear() === hoje.getFullYear()) {
+
+                        d.classList.remove("available");
+                        d.classList.add("disabled");
+                        d.replaceWith(d.cloneNode(true)); 
+                    }
+                });
+            }
+        }
+        
 
         function selectDate(dateObj) {
             selectedDate = dateObj;
@@ -723,6 +763,7 @@
         });
 
         renderCalendar();
+        esconderHojeSeHorarioPassou();
     </script>
 </body>
 </html>

@@ -9,13 +9,6 @@ class Categoria(models.Model):
         return self.nome
 
 class Servico(models.Model):
-    CATEGORIAS = [
-        ('Corte', 'Corte'),
-        ('Barba', 'Barba'),
-        ('Sobrancelha', 'Sobrancelha'),
-        ('Pintura', 'Pintura'),
-        ('Designs', 'Designs'),
-    ]
 
     nome = models.CharField(max_length=100)
     descricao = models.TextField(blank=True)

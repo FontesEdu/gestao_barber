@@ -403,7 +403,7 @@
     </style>
 </head>
 <body>
-    <!-- Navigation -->
+    <!-- Navbar -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-brand">
@@ -436,18 +436,12 @@
         <a href="/#contatos">Contatos</a>
     </div>
 
-    <!-- Main Content -->
+    <!--Categorias -->
     <section class="category-services">
         <div class="container">
             <h2 class="section-title centered">
                 {% if categoria %}{{ categoria.nome }}{% else %}Serviços{% endif %}
             </h2>
-
-            {% if categoria.foto %}
-                <div class="category-banner">
-                    <img src="{{ categoria.foto.url }}" alt="{{ categoria.nome }}" class="banner-img">
-                </div>
-            {% endif %}
 
             {% if servicos %}
                 <div class="services-grid">
@@ -504,7 +498,7 @@
     </footer>
 
     <script>
-        // Mobile Menu Toggle
+        //Menu mobile
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const mobileMenu = document.getElementById('mobileMenu');
 
@@ -512,14 +506,14 @@
             mobileMenu.classList.toggle('active');
         });
 
-        // Close menu when clicking on a link
+        // Menu fecha quabdi seleciona um link
         document.querySelectorAll('.mobile-menu a').forEach(link => {
             link.addEventListener('click', () => {
                 mobileMenu.classList.remove('active');
             });
         });
 
-        // Smooth scroll for anchor links
+        // Scroll suave para anchors
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -530,7 +524,7 @@
             });
         });
 
-        // Update footer year
+        // atualiza o ano no rodapé
         document.getElementById('currentYear').textContent = new Date().getFullYear();
     </script>
 </body>

@@ -585,11 +585,11 @@
                 const botoes = document.querySelectorAll(".time-btn");
 
                 botoes.forEach(btn => {
-                    const horario = btn.textContent.trim();
+                    const horario = btn.getAttribute("data-time");
                     const [h, m] = horario.split(":").map(Number);
 
                     if (h < horaAtual || (h === horaAtual && m <= minAtual)) {
-                        btn.disabled = true;
+                        btn.remove();
                     }
                 });
             }
