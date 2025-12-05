@@ -325,42 +325,42 @@
 
         <!-- Navigation -->
     <nav class="navbar">
-        <div class="logo">Estação Barber</div>
+        <div><a href="../../../" class="navbar-brand">Estação Barber</a></div>
         <ul class="nav-links">
             <li><a href="../../">Início</a></li>
             <li><a href="#sobre">Sobre</a></li>
             <li><a href="#servicos">Serviços</a></li>
             <li><a href="#contatos">Contatos</a></li>
-            <li><a href="{% url 'tela_agendamento' %}" class="btn-agendar">Agendar Horário</a></li>
+            <li><a href="{% url 'ver_horarios' %}" class="btn-agendar">Ver Horário</a></li>
         </ul>
     </nav>
     <div class="container">
         <h1>Confirme seu agendamento</h1>
 
         <div class="info-box">
-            <p>Data: <strong>{{ data }}</strong></p>
+            <p>Data: <strong>{{ data|date:'Y-m-d' }}</strong></p>
             <p>Horário: <strong>{{ horario }}</strong></p>
         </div>
 
         <form action="{% url 'finalizar_agendamento' %}" method="POST">
             {% csrf_token %}
-
+            
+            <!-- Campos obrigatórios -->
             <input type="hidden" name="data" value="{{ data }}">
             <input type="hidden" name="horario" value="{{ horario }}">
-
-            <div>
-                <label for="nome">Seu nome:</label>
-                <input type="text" id="nome" name="nome" required>
-            </div>
-
-            <div>
-                <label for="telefone">Telefone:</label>
-                <input type="text" id="telefone" name="telefone" required>
-            </div>
-
-            <button type="submit">Confirmar</button>
+            
+            <label for="nome">Nome:</label>
+            <input type="text" name="nome" id="nome" required>
+            
+            <label for="telefone">Telefone:</label>
+            <input type="text" name="telefone" id="telefone" required>
+            
+            <button type="submit">Finalizar Agendamento</button>
         </form>
+
+
     </div>
+
 
         <footer class="footer">
         <div class="footer-content">

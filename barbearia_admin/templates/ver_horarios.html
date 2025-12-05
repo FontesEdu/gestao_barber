@@ -320,7 +320,7 @@
             <li><a href="#sobre">Sobre</a></li>
             <li><a href="#servicos">Serviços</a></li>
             <li><a href="#contatos">Contatos</a></li>
-            <li><a href="{% url 'tela_agendamento' %}" class="btn-agendar">Horários do Dia</a></li>
+            <li><a href="{% url 'tela_agendamento' %}" class="btn-agendar">Agendar Horários</a></li>
         </ul>
     </nav>
 
@@ -335,7 +335,8 @@
 
                 <input type="date"
                        value="{{ hoje|date:'Y-m-d' }}"
-                       onchange="window.location.href='/agendamentos/painel_adm/' + this.value">
+                       onchange="window.location.href='/agendamentos/ver_horarios/?data=' + this.value">
+
             </div>
         </form>
 
@@ -349,6 +350,7 @@
                     <tr>
                         <th>Horário</th>
                         <th>Status</th>
+                        <th>Cliente</th>
                     </tr>
                 </thead>
 
@@ -365,12 +367,19 @@
                             <span class="status-livre">Livre</span>
                         {% endif %}
                     </td>
+                    <td>
+                        {% if h.status == 'agendado' %}
+                            {{ h.nome_cliente }}
+                        {% else %}
+                            &mdash;
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
                 </tbody>
-
             </table>
         </div>
+
 
         <hr>
 

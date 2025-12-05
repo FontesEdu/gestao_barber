@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from datetime import datetime, date, timedelta
+from .models import Disponibilidade, Agendamento
 from django.http import JsonResponse, HttpResponse
 from django.db.models import Count
 from django_ratelimit.decorators import ratelimit
@@ -31,7 +32,7 @@ def tela_agendamento(request):
 
     return render(request, "ver_calendario.html", {
         "datas_disponiveis": datas_formatadas,
-        "horarios_hoje": json.dumps([str(h) for h in horarios_hoje])  # 🔥 AQUI
+        "horarios_hoje": json.dumps([str(h) for h in horarios_hoje])  
     })
 
 
@@ -70,58 +71,65 @@ def ver_disponibilidade(request):
 
 # Tela de confirmação do agendamento
 def confirmar_agendamento(request):
-    # Recupera os dados enviados
     data = request.GET.get("data")
     horario = request.GET.get("horario")
-
     if not data or not horario:
-        return HttpResponse("Erro: data ou horário inválidos.")
+        return HttpResponse("Erro: data ou horário inválidos.", status=400)
+    return render(request, "confirmar_agendamento.html", {"data": data, "horario": horario})
 
-    return render(request, "confirmar_agendamento.html", {
-        "data": data,
+
+
+# Finaliza o agendamento, com limite de 3 tentativas por dia
+
+@ratelimit(key='ip', rate='3/d', block=True)
+def finalizar_agendamento(request):
+    if request.method != "POST":
+        return HttpResponse("Método inválido.", status=405)
+
+    nome = request.POST.get("nome")
+    telefone = request.POST.get("telefone")
+    data = request.POST.get("data")
+    horario = request.POST.get("horario")
+
+    # Validação de campos
+    if not all([nome, telefone, data, horario]):
+        return HttpResponse("Todos os campos são obrigatórios.", status=400)
+
+    # Converte data para objeto date
+    try:
+        data_obj = datetime.strptime(data, "%Y-%m-%d").date()
+    except (ValueError, TypeError):
+        return HttpResponse("Formato de data inválido. Use YYYY-MM-DD.", status=400)
+
+    # Cria o agendamento
+    Agendamento.objects.create(
+        nome=nome,
+        telefone=telefone,
+        data=data_obj,
+        horario=horario
+    )
+
+    # Marca disponibilidade como ocupada
+    try:
+        disp = Disponibilidade.objects.get(data=data_obj, horario=horario)
+        disp.disponivel = False
+        disp.save()
+    except Disponibilidade.DoesNotExist:
+        pass
+
+    # Renderiza página de sucesso
+    return render(request, "sucesso.html", {
+        "nome": nome,
+        "data": data_obj.strftime("%Y-%m-%d"),
         "horario": horario
     })
 
 
-# Finaliza o agendamento, com limite de 3 tentativas por dia
-@ratelimit(key='ip', rate='3/d', block=True)
-def finalizar_agendamento(request):
-    # Aceita apenas POST
-    if request.method == "POST":
-        nome = request.POST.get("nome")
-        telefone = request.POST.get("telefone")
-        data = request.POST.get("data")
-        horario = request.POST.get("horario")
-
-        # Cria o agendamento
-        Agendamento.objects.create(
-            nome=nome,
-            telefone=telefone,
-            data=data,
-            horario=horario
-        )
-
-        # Marca disponibilidade como ocupada
-        try:
-            disp = Disponibilidade.objects.get(data=data, horario=horario)
-            disp.disponivel = False
-            disp.save()
-        except Disponibilidade.DoesNotExist:
-            pass
-
-        return render(request, "sucesso.html", {
-            "nome": nome,
-            "data": data,
-            "horario": horario
-        })
-
-    return HttpResponse("Método inválido.")
 
 
 # Painel administrativo que mostra horários, agendados e livres
 
 def painel_adm(request, data=None):
-    # Se recebeu data pela URL, usa ela
     if data:
         hoje = datetime.strptime(data, "%Y-%m-%d").date()
     else:
@@ -134,34 +142,29 @@ def painel_adm(request, data=None):
     # Busca disponibilidades do dia
     horarios = Disponibilidade.objects.filter(data=hoje).order_by("horario")
 
-    # >>> AQUI ENTRA A LÓGICA DE HORÁRIO PASSADO <<<
     agora = datetime.now()
 
+    # Busca agendamentos do dia
+    agendamentos = Agendamento.objects.filter(data=hoje)
+    agendados_dict = {ag.horario: ag for ag in agendamentos}
+
     for h in horarios:
-        if datetime.combine(h.data, h.horario) < agora:
-            h.passou = True
-        else:
-            h.passou = False
+        h.passou = datetime.combine(h.data, h.horario) < agora
+        # Adiciona cliente (ou None se não houver)
+        h.cliente = agendados_dict.get(h.horario)
 
-    # Mapeia agendamentos pelo horário para exibição rápida
-    agendados = {
-        ag.horario: ag
-        for ag in Agendamento.objects.filter(data=hoje)
-    }
-
-    # Contadores gerais
     total_horarios = horarios.count()
-    total_agendados = len(agendados)
+    total_agendados = len(agendamentos)
     total_livres = total_horarios - total_agendados
 
     return render(request, "admin/painel_adm.html", {
         "hoje": hoje,
         "horarios": horarios,
-        "agendados": agendados,
         "total_horarios": total_horarios,
         "total_agendados": total_agendados,
         "total_livres": total_livres
     })
+
 
 
 # Remove um horário específico
@@ -196,57 +199,68 @@ def remover_horario(request, id):
     Disponibilidade.objects.filter(id=id).delete()
     return redirect(request.META.get("HTTP_REFERER", "painel_adm"))
 
+
 def ver_disponibilidade(request):
-    data = request.GET.get("data")
-    horarios = Horario.objects.filter(data=data)
+    data_str = request.GET.get("data")
+    if not data_str:
+        return render(request, "ver_calendario.html")
+
+    # Converte para date
+    data_obj = date.fromisoformat(data_str)
+
+    # Todos os horários cadastrados para a data
+    disponibilidades = Disponibilidade.objects.filter(data=data_obj).order_by("horario")
+
+    # Horários já agendados
+    agendados = Agendamento.objects.filter(data=data_obj).values_list("horario", flat=True)
 
     agora = datetime.now()
+    horarios_livres = []
 
-    for h in horarios:
-        # Se a data/hora do horário já passou marca como indisponível
-        if datetime.combine(h.data, h.horario) < agora:
-            h.indisponivel = True
+    for h in disponibilidades:
+        # Remove horários já agendados
+        if h.horario in agendados:
+            continue
 
-    return render(request, "disponibilidade.html", {"horarios": horarios})
+        # Se for hoje, remove horários que já passaram
+        if data_obj == agora.date() and datetime.combine(h.data, h.horario) <= agora:
+            continue
 
-from datetime import datetime, date
-from .models import Disponibilidade, Agendamento
+        # Formata em HH:MM
+        horarios_livres.append(h.horario.strftime("%H:%M"))
+
+    return render(request, "ver_disponibilidade.html", {
+        "data_selecionada": data_obj,
+        "horarios_livres": horarios_livres
+    })
+
 
 def ver_horarios(request):
-    # pegar a data enviada por GET ou usar hoje
     data_str = request.GET.get('data')
-    if data_str:
-        hoje = date.fromisoformat(data_str)
-    else:
-        hoje = date.today()
+    hoje = date.fromisoformat(data_str) if data_str else date.today()
 
-    # buscar todos os horários do dia
     horarios = Disponibilidade.objects.filter(data=hoje).order_by("horario")
+    agendamentos_qs = Agendamento.objects.filter(data=hoje)
+    agendados_dict = {ag.horario: ag.nome for ag in agendamentos_qs}
 
-    # buscar agendamentos do dia
-    agendados_qs = Agendamento.objects.filter(data=hoje).values_list('horario', flat=True)
-
-    # marcar status de cada horário
     for h in horarios:
         if datetime.combine(h.data, h.horario) < datetime.now():
             h.status = "passado"
-        elif h.horario in agendados_qs:
+            h.nome_cliente = ""
+        elif h.horario in agendados_dict:
             h.status = "agendado"
+            h.nome_cliente = agendados_dict[h.horario]
         else:
             h.status = "livre"
-
-    total_horarios = horarios.count()
-    total_agendados = len(agendados_qs)
-    total_livres = total_horarios - total_agendados
+            h.nome_cliente = ""
 
     context = {
         'hoje': hoje,
         'horarios': horarios,
-        'total_horarios': total_horarios,
-        'total_agendados': total_agendados,
-        'total_livres': total_livres,
+        'total_horarios': horarios.count(),
+        'total_agendados': len(agendados_dict),
+        'total_livres': horarios.count() - len(agendados_dict),
     }
 
     return render(request, 'ver_horarios.html', context)
-
 

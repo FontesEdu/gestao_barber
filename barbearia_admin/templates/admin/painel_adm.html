@@ -329,7 +329,7 @@
             <li><a href="#sobre">Sobre</a></li>
             <li><a href="#servicos">Serviços</a></li>
             <li><a href="#contatos">Contatos</a></li>
-            <li><a href="{% url 'tela_agendamento' %}" class="btn-agendar">Horários do Dia</a></li>
+            <li><a href="{% url 'tela_agendamento' %}" class="btn-agendar">Agendar Horário</a></li>
         </ul>
     </nav>
 
@@ -358,6 +358,7 @@
                     <tr>
                         <th>Horário</th>
                         <th>Status</th>
+                        <th>Cliente</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -370,22 +371,28 @@
                         <td>
                             {% if h.passou %}
                                 <span class="status-passado">Indisponível</span>
-
-                            {% elif h.horario in agendados %}
+                            {% elif h.cliente %}
                                 <span class="status-agendado">Agendado</span>
-
                             {% else %}
                                 <span class="status-livre">Livre</span>
                             {% endif %}
                         </td>
 
                         <td>
-                            {% if not h.passou %}
-                            <a href="{% url 'remover_horario' h.id %}"
-                               class="btn-remover"
-                               onclick="return confirm('Deseja realmente remover este horário?')">
-                                Remover
-                            </a>
+                            {% if h.cliente %}
+                                {{ h.cliente.nome }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if h.id %}
+                                <a href="{% url 'remover_horario' h.id %}"
+                                class="btn-remover"
+                                onclick="return confirm('Deseja realmente remover este horário? Isso apagará o agendamento, se existir.')">
+                                    Remover
+                                </a>
                             {% else %}
                                 —
                             {% endif %}
@@ -394,6 +401,7 @@
                     </tr>
                     {% endfor %}
                 </tbody>
+
 
             </table>
         </div>
@@ -425,4 +433,5 @@
     </footer>
 
 </body>
+
 </html>

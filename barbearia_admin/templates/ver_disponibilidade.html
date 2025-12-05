@@ -504,22 +504,22 @@
                         Selecione um horário para confirmar seu agendamento
                     </div>
 
-                    <form action="{% url 'confirmar_agendamento' %}" method="get">
-                        <input type="hidden" name="data" value="{{ data_selecionada }}">
+                <form action="{% url 'confirmar_agendamento' %}" method="get">
+                    <input type="hidden" name="data" value="{{ data_selecionada|date:'Y-m-d' }}">
+                    <div class="time-grid" id="timeGrid">
+                        {% for horario in horarios_livres %}
+                            <button 
+                                type="submit" 
+                                name="horario" 
+                                value="{{ horario }}"
+                                class="time-btn"
+                                data-time="{{ horario }}">
+                                {{ horario }}
+                            </button>
+                        {% endfor %}
+                    </div>
+                </form>
 
-                        <div class="time-grid" id="timeGrid">
-                            {% for horario in horarios_livres %}
-                                <button 
-                                    type="submit" 
-                                    name="horario" 
-                                    value="{{ horario }}"
-                                    class="time-btn"
-                                    data-time="{{ horario }}">
-                                    {{ horario }}
-                                </button>
-                            {% endfor %}
-                        </div>
-                    </form>
                 {% else %}
                     <div class="empty-state">
                         <div class="empty-state-icon">📅</div>
