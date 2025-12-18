@@ -29,13 +29,10 @@ jobs:
           pip install -r requirements.txt
  
       - name: Run tests
-        run: |
-          cd src
-          Python manage.py test
+        run:  Python manage.py test
 
       - name: Relatório de cobertura de testes
         run: |
-          cd src
           coverage run manage.py test
           coverage report
           coverage html -d htmlcov --omit='.venv/*'
