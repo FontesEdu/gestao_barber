@@ -350,7 +350,7 @@
                     <tr>
                         <th>Horário</th>
                         <th>Status</th>
-                        <th>Cliente</th>
+                       <!-- <th>Cliente</th> -->
                     </tr>
                 </thead>
 
@@ -367,6 +367,7 @@
                             <span class="status-livre">Livre</span>
                         {% endif %}
                     </td>
+                    <!--
                     <td>
                         {% if h.status == 'agendado' %}
                             {{ h.nome_cliente }}
@@ -374,6 +375,7 @@
                             &mdash;
                         {% endif %}
                     </td>
+                    -->
                 </tr>
                 {% endfor %}
                 </tbody>

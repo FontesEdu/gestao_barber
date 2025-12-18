@@ -5,6 +5,7 @@ from django.http import JsonResponse, HttpResponse
 from django.db.models import Count
 from django_ratelimit.decorators import ratelimit
 import json
+from django.db.utils import IntegrityError 
 
 
 # Tela inicial onde o cliente escolhe a data
@@ -100,22 +101,31 @@ def finalizar_agendamento(request):
         data_obj = datetime.strptime(data, "%Y-%m-%d").date()
     except (ValueError, TypeError):
         return HttpResponse("Formato de data inválido. Use YYYY-MM-DD.", status=400)
-
-    # Cria o agendamento
-    Agendamento.objects.create(
-        nome=nome,
-        telefone=telefone,
-        data=data_obj,
-        horario=horario
-    )
-
-    # Marca disponibilidade como ocupada
+    
+    # 1. Busca e verifica se a disponibilidade existe antes de agendar
     try:
         disp = Disponibilidade.objects.get(data=data_obj, horario=horario)
-        disp.disponivel = False
-        disp.save()
     except Disponibilidade.DoesNotExist:
-        pass
+        # Se o horário não existe na tabela de disponibilidade (segurança)
+        return HttpResponse("Erro: Horário indisponível ou inexistente.", status=400)
+
+
+    # 2. Cria o agendamento e trata o erro de unicidade
+    try:
+        Agendamento.objects.create(
+            nome=nome,
+            telefone=telefone,
+            data=data_obj,
+            horario=horario
+        )
+    except IntegrityError:
+        # Captura se outro cliente agendou no mesmo milissegundo (colisão)
+        return HttpResponse("Erro: Este horário já foi agendado.", status=409)
+
+
+    # 3. Marca a disponibilidade como ocupada (Atualiza o objeto que já buscamos)
+    disp.disponivel = False
+    disp.save()
 
     # Renderiza página de sucesso
     return render(request, "sucesso.html", {
@@ -123,8 +133,6 @@ def finalizar_agendamento(request):
         "data": data_obj.strftime("%Y-%m-%d"),
         "horario": horario
     })
-
-
 
 
 # Painel administrativo que mostra horários, agendados e livres
@@ -263,4 +271,3 @@ def ver_horarios(request):
     }
 
     return render(request, 'ver_horarios.html', context)
-
