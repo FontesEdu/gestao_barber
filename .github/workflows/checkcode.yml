@@ -29,7 +29,7 @@ jobs:
           pip install -r requirements.txt
  
       - name: Run tests
-        run:  Python manage.py test
+        run:  python manage.py test
 
       - name: Relatório de cobertura de testes
         run: |
