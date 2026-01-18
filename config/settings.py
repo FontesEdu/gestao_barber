@@ -15,7 +15,7 @@ SECRET_KEY = "django-insecure-vm%8=esubp9d*n3d$90gjf*lrqf_(887i6xvr0*zsq##%p70t*
 DEBUG = True
 
 # Docker / produção local
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["52.14.72.21", "localhost"]
 
 
 # Application definition
@@ -80,7 +80,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 LANGUAGE_CODE = "pt-BR"
-TIME_ZONE = "America/Fortaleza"
+TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_TZ = True
 
@@ -102,4 +102,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
     "https://localhost:8000",
+    "http://52.14.72.21",
+    "http://52.14.72.21:8000",
 ]
