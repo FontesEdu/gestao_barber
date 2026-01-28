@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estação Barber - Horários</title>
+
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-image: url("../../static/img/image01.png");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        position: relative;
+        min-height: 100vh;
+    }
+
+    /* Ajustado overlay para corresponder à imagem - mais escuro */
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(11, 18, 36, 0.92);
+        z-index: -1;
+    }
+
+    /* NAVBAR - ajustada para corresponder exatamente à imagem */
+    .navbar {
+        width: 100%;
+        padding: 20px 60px;
+        background: #0B1224;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        z-index: 10;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .navbar-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: white;
+        text-decoration: none;
+        font-size: 20px;
+        font-weight: 600;
+    }
+
+    .navbar-brand::before {
+        content: "✂";
+        color: #F7A41D;
+        font-size: 24px;
+    }
+
+    .navbar-links {
+        display: flex;
+        gap: 40px;
+        list-style: none;
+        align-items: center;
+    }
+
+    .navbar-links a {
+        color: #d6d6d6;
+        text-decoration: none;
+        font-size: 16px;
+        transition: color 0.3s;
+    }
+
+    .navbar-links a:hover {
+        color: #ffffff;
+    }
+
+    /* Botão amarelo como na imagem */
+    .btn-agendar {
+        padding: 12px 28px;
+        background: #F7A41D;
+        color: #0B1224;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s;
+        font-size: 15px;
+    }
+
+    .btn-agendar:hover {
+        background: #ffb733;
+        transform: translateY(-2px);
+    }
+
+    /* CONTAINER - redesenhado para combinar com o estilo da imagem */
+    .container {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        padding: 50px 40px;
+        max-width: 1100px;
+        width: 95%;
+        text-align: center;
+        margin: 120px auto 50px auto;
+    }
+
+    h1 {
+        font-size: 36px;
+        font-weight: 700;
+        color: #0B1224;
+        margin-bottom: 20px;
+    }
+
+    h3 {
+        margin: 30px 0 20px;
+        font-size: 22px;
+        font-weight: 600;
+        color: #0B1224;
+    }
+
+    /* CALENDÁRIO - estilizado para combinar */
+    .date-selector {
+        margin: 30px 0;
+        font-size: 17px;
+        font-weight: 500;
+        color: #333;
+    }
+
+    input[type="date"] {
+        margin-top: 12px;
+        padding: 14px 20px;
+        font-size: 16px;
+        border-radius: 10px;
+        border: 2px solid #ddd;
+        outline: none;
+        transition: 0.2s;
+        background: white;
+    }
+
+    input[type="date"]:hover,
+    input[type="date"]:focus {
+        border-color: #F7A41D;
+    }
+
+    hr {
+        border: none;
+        border-top: 2px solid #e0e0e0;
+        margin: 30px 0;
+    }
+
+    /* TABELA - cores ajustadas */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        border-radius: 14px;
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    th {
+        background: #0B1224;
+        color: white;
+        padding: 18px;
+        text-align: center;
+        font-size: 16px;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+
+    td {
+        padding: 16px;
+        border-bottom: 1px solid #f0f0f0;
+        text-align: center;
+        font-size: 15px;
+        color: #333;
+    }
+
+    tr:hover {
+        background: #f9f9f9;
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* STATUS - ajustados */
+    .status-agendado {
+        background: #ffe8e8;
+        color: #dc3545;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        display: inline-block;
+    }
+
+    .status-livre {
+        background: #e8f8ea;
+        color: #28a745;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        display: inline-block;
+    }
+
+    .status-passado {
+        background: #eeeeee;
+        color: #666;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        display: inline-block;
+    }
+
+    /* BOTÃO REMOVER - ajustado */
+    .btn-remover {
+        padding: 10px 20px;
+        background: #dc3545;
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.2s;
+        display: inline-block;
+    }
+
+    .btn-remover:hover {
+        background: #b92334;
+        transform: translateY(-2px);
+    }
+
+    /* CARDS DE ESTATÍSTICA - cores ajustadas para combinar com a paleta */
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+        margin-top: 35px;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, #0B1224, #1a2744);
+        padding: 28px;
+        border-radius: 16px;
+        color: white;
+        box-shadow: 0 8px 25px rgba(11, 18, 36, 0.3);
+        transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-card p {
+        margin-bottom: 12px;
+        font-size: 15px;
+        opacity: 0.9;
+    }
+
+    .stat-card strong {
+        font-size: 32px;
+        font-weight: 700;
+        color: #F7A41D;
+    }
+
+    /* FOOTER - ajustado */
+    .footer {
+        padding: 30px 0;
+        background: #0B1224;
+        margin-top: 50px;
+        text-align: center;
+    }
+
+    .footer p {
+        color: #d6d6d6;
+        font-size: 14px;
+    }
+
+    /* Responsivo */
+    @media (max-width: 768px) {
+        .navbar {
+            padding: 15px 20px;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .navbar-links {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .container {
+            margin-top: 200px;
+            padding: 30px 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+        }
+
+        .stats {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+</head>
+<body>
+
+    <!-- NAVBAR atualizada com estrutura da imagem -->
+    <nav class="navbar">
+        <a href="../../../" class="navbar-brand">Estação Barber</a>
+
+        <ul class="navbar-links">
+            <li><a href="../../../">Início</a></li>
+            <li><a href="#sobre">Sobre</a></li>
+            <li><a href="#servicos">Serviços</a></li>
+            <li><a href="#contatos">Contatos</a></li>
+            <li><a href="{% url 'tela_agendamento' %}" class="btn-agendar">Agendar Horários</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+
+        <h1>Painel Administrativo - Estação Barber</h1>
+
+        <!-- DATA -->
+        <form>
+            <div class="date-selector">
+                <label>Selecione a data:</label>
+
+                <input type="date"
+                       value="{{ hoje|date:'Y-m-d' }}"
+                       onchange="window.location.href='/agendamentos/ver_horarios/?data=' + this.value">
+
+            </div>
+        </form>
+
+        <hr>
+
+        <h3>Horários do dia {{ hoje }}</h3>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Horário</th>
+                        <th>Status</th>
+                       <!-- <th>Cliente</th> -->
+                    </tr>
+                </thead>
+
+                <tbody>
+                {% for h in horarios %}
+                <tr>
+                    <td>{{ h.horario }}</td>
+                    <td>
+                        {% if h.status == 'passado' %}
+                            <span class="status-passado">Indisponível</span>
+                        {% elif h.status == 'agendado' %}
+                            <span class="status-agendado">Agendado</span>
+                        {% else %}
+                            <span class="status-livre">Livre</span>
+                        {% endif %}
+                    </td>
+                    <!--
+                    <td>
+                        {% if h.status == 'agendado' %}
+                            {{ h.nome_cliente }}
+                        {% else %}
+                            &mdash;
+                        {% endif %}
+                    </td>
+                    -->
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+
+        <hr>
+
+        <!-- ESTATÍSTICAS -->
+        <div class="stats">
+            <div class="stat-card">
+                <p>Total de horários</p>
+                <strong>{{ total_horarios }}</strong>
+            </div>
+
+            <div class="stat-card">
+                <p>Total agendados</p>
+                <strong>{{ total_agendados }}</strong>
+            </div>
+
+            <div class="stat-card">
+                <p>Total livres</p>
+                <strong>{{ total_livres }}</strong>
+            </div>
+        </div>
+
+    </div>
+
+    <footer class="footer">
+        <p>© Estação Barber — Todos os direitos reservados.</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmar Agendamento</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ================= NAVBAR ================== */
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+
+            /* Imagem de fundo */
+            background-image: url("../../static/img/image01.png");
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+
+            /* A sobreposição escura */
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+
+            /* Aqui está o segredo */
+            background: rgba(0, 10, 30, 0.70);  
+            /* 70% de escuridão com leve azul marinho */
+
+            z-index: -1;  /* fica atrás do conteúdo */
+        }
+        .logo{
+            color: white;
+        }
+
+        /* ======== NAVBAR ======== */
+        .navbar {
+            width: 100%;
+            padding: 30px 60px;
+            background: #0B1224;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            z-index: 10;
+        }
+
+        /* LOGO + NOME */
+        .navbar-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-left img {
+            width: 26px;
+            margin-right: 10px;
+        }
+
+        .navbar-left span {
+            font-size: 22px;
+            font-weight: 600;
+            color: white;
+        }
+
+        /* LINKS */
+        .navbar-links {
+            display: flex;
+            gap: 35px;
+            text-decoration: none;
+        }
+
+        .navbar-links a {
+            text-decoration: none;
+            font-size: 17px;
+            color: #d6d6d6;
+            transition: 0.3s;
+        }
+
+        .navbar-links a:hover {
+            color: #ffffff;
+        }
+
+        /* BOTÃO */
+        .btn-agendar {
+            padding: 10px 22px;
+            background: #F7A41D;
+            color: #0B1224;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.3s;
+            margin-left: 300px;
+        }
+
+        .btn-agendar:hover {
+            background: #ffb733;
+        }
+
+        a{
+            margin: 26px;
+            text-decoration: none;
+            color: white;
+        }
+
+        a:hover{
+            color: gold;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+
+            margin: 140px auto 50px auto;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #1a1a1a;
+            margin-bottom: 30px;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+            text-align: left;
+        }
+
+        .info-box p {
+            font-size: 14px;
+            color: #666;
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .info-box strong {
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #1a1a1a;
+            font-weight: 600;
+            text-align: left;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        input[type="text"],
+        input[type="hidden"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            margin-top: 12px;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 25px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+                margin-bottom: 25px;
+            }
+
+            label {
+                font-size: 13px;
+            }
+
+            input[type="text"] {
+                padding: 10px 14px;
+                font-size: 13px;
+            }
+
+            button[type="submit"] {
+                padding: 14px;
+                font-size: 15px;
+            }
+
+            .info-box {
+                padding: 16px;
+                margin-bottom: 25px;
+            }
+
+            .info-box p {
+                font-size: 13px;
+            }
+        }
+
+                        /* Footer */
+        .footer {
+            padding: var(--spacing-lg) 0;
+            background-color: var(--color-bg-dark);
+            border-top: 1px solid var(--color-border);
+        }
+
+        .footer-content {
+            text-align: center;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-xs);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .footer-icon {
+            color: var(--color-primary);
+        }
+
+        .footer-text {
+            color: var(--color-text-secondary);
+        }
+
+        /* Responsive Design */
+        @media (min-width: 768px) {
+            .nav-links {
+                display: flex;
+            }
+            
+            .mobile-menu-btn {
+                display: none;
+            }
+            
+            .hero-title {
+                font-size: 4.5rem;
+            }
+            
+            .about-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .services-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .contacts-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 767px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.25rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+        <!-- Navigation -->
+    <nav class="navbar">
+        <div><a href="../../../" class="navbar-brand">Estação Barber</a></div>
+        <ul class="nav-links">
+            <li><a href="../../">Início</a></li>
+            <li><a href="#sobre">Sobre</a></li>
+            <li><a href="#servicos">Serviços</a></li>
+            <li><a href="#contatos">Contatos</a></li>
+            <li><a href="{% url 'ver_horarios' %}" class="btn-agendar">Ver Horário</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <h1>Confirme seu agendamento</h1>
+
+        <div class="info-box">
+            <p>Data: <strong>{{ data|date:'Y-m-d' }}</strong></p>
+            <p>Horário: <strong>{{ horario }}</strong></p>
+        </div>
+
+        <form action="{% url 'finalizar_agendamento' %}" method="POST">
+            {% csrf_token %}
+            
+            <!-- Campos obrigatórios -->
+            <input type="hidden" name="data" value="{{ data }}">
+            <input type="hidden" name="horario" value="{{ horario }}">
+            
+            <label for="nome">Nome:</label>
+            <input type="text" name="nome" id="nome" required>
+            
+            <label for="telefone">Telefone:</label>
+            <input type="text" name="telefone" id="telefone" required>
+            
+            <button type="submit">Finalizar Agendamento</button>
+        </form>
+
+
+    </div>
+
+
+        <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <svg class="footer-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 18L18 6M6 6l12 12"/>
+                    <circle cx="12" cy="12" r="1"/>
+                </svg>
+                <span>Estação Barber</span>
+            </div>
+            <p class="footer-text">
+                © <span id="currentYear"></span> Estação Barber. Todos os direitos reservados.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        $(document).ready(function(){
+            $('#telefone').mask('(00) 00000-0000');
+        });
+    </script>
+</body>
+</html>

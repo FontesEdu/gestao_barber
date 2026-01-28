@@ -1,0 +1,717 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estação Barber </title>
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Color Palette */
+    --color-bg-dark: #0a1128;
+    --color-bg-card: #131b35;
+    --color-bg-secondary: #1a2447;
+    --color-bg-muted: #1f2a4d;
+    --color-text-primary: #f9fafb;
+    --color-text-secondary: #a0a8bd;
+    --color-primary: #f59e0b;
+    --color-primary-dark: #d97706;
+    --color-border: #1f2a4d;
+    
+    /* Typography */
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    
+    /* Spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+    --spacing-2xl: 4rem;
+    
+    /* Border Radius */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: var(--color-bg-dark);
+    color: var(--color-text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+/* Navigation */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background-color: rgba(10, 17, 40, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-sm) var(--spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.nav-icon {
+    color: var(--color-primary);
+}
+
+.nav-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+
+}
+
+a{
+    text-decoration: none;
+    color: white;
+}
+
+.nav-links {
+    display: none;
+    gap: var(--spacing-lg);
+}
+
+.nav-links a {
+    color: var(--color-text-primary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: var(--color-primary);
+}
+
+.mobile-menu-btn {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--spacing-xs);
+}
+
+.mobile-menu-btn span {
+    width: 24px;
+    height: 2px;
+    background-color: var(--color-text-primary);
+    transition: all 0.3s ease;
+}
+
+.mobile-menu {
+    display: none;
+    position: fixed;
+    top: 73px;
+    left: 0;
+    right: 0;
+    background-color: var(--color-bg-card);
+    border-bottom: 1px solid var(--color-border);
+    flex-direction: column;
+    padding: var(--spacing-md);
+    gap: var(--spacing-sm);
+    z-index: 40;
+}
+
+.mobile-menu.active {
+    display: flex;
+}
+
+.mobile-menu a {
+    color: var(--color-text-primary);
+    text-decoration: none;
+    padding: var(--spacing-sm);
+    transition: color 0.3s ease;
+}
+
+.mobile-menu a:hover {
+    color: var(--color-primary);
+}
+
+/* Buttons */
+.btn {
+    padding: 0.625rem 1.5rem;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    color: var(--color-bg-dark);
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primary-dark);
+    transform: translateY(-2px);
+}
+
+.btn-large {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+}
+
+/* Hero Section */
+.hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 80px;
+}
+
+.hero-bg {
+    position: absolute;
+    inset: 0;
+    background-image: url(../static/img/image01.png);
+    background-size: cover;
+    background-position: center;
+    opacity: 0.3;
+    z-index: 0;
+}
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(10, 17, 40, 0.5), rgba(10, 17, 40, 0.8), rgba(10, 17, 40, 1));
+    z-index: 0;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: var(--spacing-md);
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+    text-wrap: balance;
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-sm);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-text {
+    font-size: 1.25rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-lg);
+}
+
+/* About Section */
+.about {
+    padding: 6rem 0;
+    background-color: var(--color-bg-card);
+}
+
+.about-grid {
+    display: grid;
+    gap: var(--spacing-xl);
+    align-items: center;
+}
+
+.about-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+}
+
+.section-title.centered {
+    text-align: center;
+}
+
+.about-text {
+    font-size: 1.125rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
+
+.about-images {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-sm);
+}
+
+.about-img {
+    width: 100%;
+    height: 16rem;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+}
+
+.about-img-2 {
+    margin-top: var(--spacing-lg);
+}
+
+/* Services Section */
+.services {
+    padding: 6rem 0;
+    background-color: var(--color-bg-dark);
+}
+
+.services-description {
+    text-align: center;
+    font-size: 1.125rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-xl);
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.services-grid {
+    display: grid;
+    gap: var(--spacing-lg);
+}
+
+.service-card {
+    background-color: var(--color-bg-card);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    transition: border-color 0.3s ease, transform 0.3s ease;
+}
+
+.service-card:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-4px);
+}
+
+.service-img {
+    width: 100%;
+    height: 16rem;
+    object-fit: cover;
+}
+
+.service-content {
+    padding: var(--spacing-md);
+}
+
+.service-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-sm);
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
+
+.service-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.service-price {
+    background-color: var(--color-primary);
+    color: var(--color-bg-dark);
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.service-description {
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
+
+/* Contacts Section */
+.contacts {
+    padding: 6rem 0;
+    background-color: var(--color-bg-card);
+}
+
+.contacts-grid {
+    display: grid;
+    gap: var(--spacing-xl);
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.contact-card {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.contact-icon {
+    width: 5rem;
+    height: 5rem;
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--spacing-sm);
+}
+
+.contact-icon svg {
+    color: var(--color-primary);
+}
+
+.contact-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.contact-text {
+    color: var(--color-text-secondary);
+}
+
+.contact-link {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.contact-link:hover {
+    color: var(--color-primary-dark);
+}
+
+/* Footer */
+.footer {
+    padding: var(--spacing-lg) 0;
+    background-color: var(--color-bg-dark);
+    border-top: 1px solid var(--color-border);
+}
+
+.footer-content {
+    text-align: center;
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
+}
+
+.footer-icon {
+    color: var(--color-primary);
+}
+
+.footer-text {
+    color: var(--color-text-secondary);
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+    .nav-links {
+        display: flex;
+    }
+    
+    .mobile-menu-btn {
+        display: none;
+    }
+    
+    .hero-title {
+        font-size: 4.5rem;
+    }
+    
+    .about-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .services-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .contacts-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 767px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.25rem;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+}
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 18L18 6M6 6l12 12"/>
+                    <circle cx="12" cy="12" r="1"/>
+                </svg>
+                <a href=""><span class="nav-title">Estação Barber</span></a>
+            </div>
+            <div class="nav-links">
+                <a href="">Início</a>
+                <a href="#sobre">Sobre</a>
+                <a href="#servicos">Serviços</a>
+                <a href="#contatos">Contatos</a>
+            </div>
+            <a href="{% url 'ver_horarios' %}"><button class="btn btn-primary">Horários do Dia</button></a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#inicio">Início</a>
+        <a href="#sobre">Sobre</a>
+        <a href="#servicos">Serviços</a>
+        <a href="#contatos">Contatos</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">Estação Barber</h1>
+            <p class="hero-subtitle">
+                Horário de funcionamento: Segunda a Sexta das 08:00 às 20:00
+            </p>
+            <p class="hero-text">
+                
+            </p>
+            <a href="{% url 'tela_agendamento' %}"><button class="btn btn-primary btn-large">Agendar Agora</button></a>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="servicos" class="services">
+        <div class="container">
+            <h2 class="section-title centered">Serviços</h2>
+            <p class="services-description">
+                Conheça nossos principais serviços. Cada um realizado com atenção aos detalhes 
+                e produtos de primeira qualidade para garantir o melhor resultado.
+            </p>
+
+            <div class="services-grid">
+
+                {% for categoria in categorias %}
+                    <a href="{% url 'servicos_por_categoria' categoria.id %}" class="service-card">
+
+                        {% if categoria.foto %}
+                            <img src="{{ categoria.foto.url }}" alt="{{ categoria.nome }}" class="service-img">
+                        {% else %}
+                            <img src="/static/img/categoria_default.png" alt="Imagem padrão" class="service-img">
+                        {% endif %}
+
+                        <div class="service-content">
+                            <div class="service-header">
+                                <h3 class="service-title">{{ categoria.nome }}</h3>
+                            </div>
+                            <p class="service-description">
+                                Veja todos os serviços da categoria {{ categoria.nome }}.
+                            </p>
+                        </div>
+                    </a>
+                {% endfor %}
+
+            </div>
+        </div>
+    </section>
+
+        <!-- Sobre Section -->
+    <section id="sobre" class="about">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-content">
+                    <h2 class="section-title">Sobre</h2>
+                    <p class="about-text">
+                        "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+                    </p>
+                    <p class="about-text">
+                        Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, 
+                    </p>
+                    <p class="about-text">
+                        sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"
+                    </p>
+                </div>
+                <div class="about-images">
+                    <img src="{% static 'img/image03.png' %}"" alt="Barbeiro profissional cortando cabelo" class="about-img about-img-1">
+                    <img src="{% static 'img/image02.png' %}" alt="Cuidado profissional com barba" class="about-img about-img-2">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contatos" class="contacts">
+        <div class="container">
+            <h2 class="section-title centered">Contatos</h2>
+            
+            <div class="contacts-grid">
+                <!-- Email -->
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="4" width="20" height="16" rx="2"/>
+                            <path d="M22 7l-10 7L2 7"/>
+                        </svg>
+                    </div>
+                    <h3 class="contact-title">E-mail</h3>
+                    <p class="contact-text">
+                        Tem alguma dúvida? Entre em contato
+                    </p>
+                    <a href="mailto:email@email.com" class="contact-link">
+                        email@email.com
+                    </a>
+                </div>
+
+                <!-- WhatsApp -->
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                    </div>
+                    <h3 class="contact-title">WhatsApp</h3>
+                    <p class="contact-text">
+                        Agende seu horário agora
+                    </p>
+                    <a href="https://wa.me/558393321365" target="_blank" rel="noopener noreferrer" class="contact-link">
+                        +55 83 9332-1365
+                        <!--não mexer no link do whatsapp -->
+                    </a>
+                </div>
+
+                <!-- Instagram -->
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                        </svg>
+                    </div>
+                    <h3 class="contact-title">Instagram</h3>
+                    <p class="contact-text">
+                        Siga-nos nas redes sociais
+                    </p>
+                    <a href="https://instagram.com/estacao_barber" target="_blank" rel="noopener noreferrer" class="contact-link">
+                        @estacao_barber
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <svg class="footer-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 18L18 6M6 6l12 12"/>
+                    <circle cx="12" cy="12" r="1"/>
+                </svg>
+                <span>Estação Barber</span>
+            </div>
+            <p class="footer-text">
+                © <span id="currentYear"></span> Estação Barber. Todos os direitos reservados.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        mobileMenuBtn.addEventListener('click', function() {
+            mobileMenu.classList.toggle('active');
+        });
+
+        // Close menu when link is clicked
+        document.querySelectorAll('.mobile-menu a').forEach(link => {
+            link.addEventListener('click', function() {
+                mobileMenu.classList.remove('active');
+            });
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
