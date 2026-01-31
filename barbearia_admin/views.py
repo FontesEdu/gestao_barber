@@ -6,6 +6,7 @@ from django.db.models import Count
 from django_ratelimit.decorators import ratelimit
 import json
 from django.db.utils import IntegrityError 
+from .utils import enviar_notificacao_whatsapp
 
 
 # Tela inicial onde o cliente escolhe a data
@@ -87,53 +88,66 @@ def finalizar_agendamento(request):
     if request.method != "POST":
         return HttpResponse("Método inválido.", status=405)
 
+    # 1. Coleta de dados do POST
     nome = request.POST.get("nome")
     telefone = request.POST.get("telefone")
-    data = request.POST.get("data")
+    data_str = request.POST.get("data")
     horario = request.POST.get("horario")
 
-    # Validação de campos
-    if not all([nome, telefone, data, horario]):
+    # Validação básica de presença de dados
+    if not all([nome, telefone, data_str, horario]):
         return HttpResponse("Todos os campos são obrigatórios.", status=400)
 
-    # Converte data para objeto date
+    # 2. Tratamento da Data
     try:
-        data_obj = datetime.strptime(data, "%Y-%m-%d").date()
+        data_obj = datetime.strptime(data_str, "%Y-%m-%d").date()
     except (ValueError, TypeError):
-        return HttpResponse("Formato de data inválido. Use YYYY-MM-DD.", status=400)
-    
-    # 1. Busca e verifica se a disponibilidade existe antes de agendar
+        return HttpResponse("Formato de data inválido.", status=400)
+
+    # 3. Verificação de Disponibilidade
     try:
+        # Buscamos a disponibilidade específica
         disp = Disponibilidade.objects.get(data=data_obj, horario=horario)
+        
+        # Se por algum motivo ela já estiver marcada como indisponível no banco
+        if not disp.disponivel:
+             return HttpResponse("Este horário acabou de ser ocupado por outro cliente.", status=409)
+             
     except Disponibilidade.DoesNotExist:
-        # Se o horário não existe na tabela de disponibilidade (segurança)
-        return HttpResponse("Erro: Horário indisponível ou inexistente.", status=400)
+        return HttpResponse("Erro: Horário não encontrado no sistema.", status=400)
 
-
-    # 2. Cria o agendamento e trata o erro de unicidade
+    # 4. Criação do Agendamento e Atualização da Disponibilidade
     try:
+        # Criamos o registro do agendamento
         Agendamento.objects.create(
             nome=nome,
             telefone=telefone,
             data=data_obj,
             horario=horario
         )
+        
+        # Marcamos como ocupado para não aparecer mais para outros
+        disp.disponivel = False
+        disp.save()
+
     except IntegrityError:
-        # Captura se outro cliente agendou no mesmo milissegundo (colisão)
-        return HttpResponse("Erro: Este horário já foi agendado.", status=409)
+        # Caso dois usuários cliquem exatamente ao mesmo tempo no último segundo
+        return HttpResponse("Erro: Este horário já foi agendado por outra pessoa.", status=409)
 
+    # 5. DISPARO DA NOTIFICAÇÃO (WhatsApp)
+    # Formatamos a data para o padrão brasileiro DD/MM/AAAA para a mensagem ficar bonita
+    data_formatada_br = data_obj.strftime("%d/%m/%Y")
+    
+    # Chamamos a função do seu utils.py
+    enviar_notificacao_whatsapp(nome, telefone, data_formatada_br, horario)
 
-    # 3. Marca a disponibilidade como ocupada (Atualiza o objeto que já buscamos)
-    disp.disponivel = False
-    disp.save()
-
-    # Renderiza página de sucesso
+    # 6. Renderização de Sucesso
     return render(request, "sucesso.html", {
         "nome": nome,
-        "data": data_obj.strftime("%Y-%m-%d"),
-        "horario": horario
+        "data": data_formatada_br,
+        "horario": horario,
+        "telefone": telefone
     })
-
 
 # Painel administrativo que mostra horários, agendados e livres
 
