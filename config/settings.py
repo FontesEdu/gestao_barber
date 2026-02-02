@@ -11,7 +11,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-vm%8=esubp9d*n3d$90gjf*lrq
 # No Render, DEBUG deve ser False. Em desenvolvimento local, True.
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ["gestao-barber-testes.onrender.com", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["gestao-barber.onrender.com", "localhost", "127.0.0.1"]
 
 # APPS
 INSTALLED_APPS = [
@@ -96,11 +96,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # CSRF
 CSRF_TRUSTED_ORIGINS = [
-    "https://gestao-barber-testes.onrender.com",
+    "https://gestao-barber.onrender.com",
     "http://localhost:8000"
 ]
 
 # CONFIGURAÇÕES DA EVOLUTION API (Lendo do Render Environment)
-EVOLUTION_API_URL = os.getenv("EVOLUTION_API_URL", "https://sua-url-api.onrender.com")
+EVOLUTION_API_URL = os.getenv("EVOLUTION_API_URL", "https://evolution-api-latest-czs6.onrender.com")
 EVOLUTION_INSTANCE_NAME = os.getenv("EVOLUTION_INSTANCE_NAME", "barbearia")
-EVOLUTION_API_KEY = os.getenv("EVOLUTION_API_KEY", "SuaChaveSecreta")
+EVOLUTION_API_KEY = os.getenv("EVOLUTION_API_KEY", "BarberKey2026")

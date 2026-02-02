@@ -38,12 +38,12 @@ def enviar_notificacao_whatsapp(nome, telefone, data, horario):
         
         # O Render/Evolution costuma retornar 201 (Created)
         if response.status_code in [200, 201]:
-            print(f"✅ WhatsApp enviado com sucesso para {nome}")
+            print(f" WhatsApp enviado com sucesso para {nome}")
             return True
         else:
-            print(f"❌ Erro na API Evolution: {response.status_code} - {response.text}")
+            print(f" Erro na API Evolution: {response.status_code} - {response.text}")
             return False
             
     except Exception as e:
-        print(f"⚠️ Erro crítico ao conectar com a API: {e}")
+        print(f" Erro crítico ao conectar com a API: {e}")
         return False
