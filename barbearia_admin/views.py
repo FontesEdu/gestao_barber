@@ -140,6 +140,7 @@ def finalizar_agendamento(request):
     
     # Chamamos a função do seu utils.py
     enviar_notificacao_whatsapp(nome, telefone, data_formatada_br, horario)
+    enviar_notificacao_whatsapp(nome, "5583996854693", data_formatada_br, horario)
 
     # 6. Renderização de Sucesso
     return render(request, "sucesso.html", {
