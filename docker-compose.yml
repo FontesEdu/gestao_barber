@@ -4,10 +4,12 @@ services:
   web:
     build: .
     container_name: django_app
-    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --timeout 120
     volumes:
       - .:/app
     ports:
       - "8000:8000"
     env_file:
       - .env
+    environment:
+      - TZ=America/Sao_Paulo
