@@ -550,67 +550,52 @@
 
     <script>
         function formatarDataBrasileira(data) {
-            const meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
-                           'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
-            const diasSemana = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
-            
-            const [ano, mes, dia] = data.split('-');
-            const dateObj = new Date(ano, parseInt(mes) - 1, dia);
+            if (!data) return "";
+
+            const dateObj = new Date(data + "T00:00:00");
+
+            const meses = [
+                'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+                'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'
+            ];
+
+            const diasSemana = [
+                'domingo', 'segunda', 'terça',
+                'quarta', 'quinta', 'sexta', 'sábado'
+            ];
+
             const nomeDia = diasSemana[dateObj.getDay()];
-            const nomeMes = meses[parseInt(mes) - 1];
-            
+            const dia = String(dateObj.getDate()).padStart(2, "0");
+            const nomeMes = meses[dateObj.getMonth()];
+            const ano = dateObj.getFullYear();
+
             return `Horários disponíveis para ${nomeDia}, ${dia} de ${nomeMes} de ${ano}`;
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const dataSelecionada = "{{ data_selecionada }}";
-            const dateTitle = document.getElementById('dateTitle');
-            if (dateTitle && dataSelecionada) {
-                dateTitle.textContent = formatarDataBrasileira(dataSelecionada);
-            }
+        const dataSelecionada = "{{ data_selecionada|date:'Y-m-d' }}";
+        const titulo = document.getElementById("dateTitle");
 
-            document.getElementById('currentYear').textContent = new Date().getFullYear();
+        if (titulo && dataSelecionada) {
+            titulo.innerText = formatarDataBrasileira(dataSelecionada);
+        }
 
-            const hoje = new Date();
-            const [ano, mes, dia] = dataSelecionada.split("-").map(Number);
-            const dataSel = new Date(ano, mes - 1, dia);
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
 
-            const mesmaData =
-                dataSel.getFullYear() === hoje.getFullYear() &&
-                dataSel.getMonth() === hoje.getMonth() &&
-                dataSel.getDate() === hoje.getDate();
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', function () {
+                mobileMenu.classList.toggle('active');
+                mobileMenuBtn.classList.toggle('active');
+            });
 
-            if (mesmaData) {
-                const horaAtual = hoje.getHours();
-                const minAtual = hoje.getMinutes();
-                const botoes = document.querySelectorAll(".time-btn");
-
-                botoes.forEach(btn => {
-                    const horario = btn.getAttribute("data-time");
-                    const [h, m] = horario.split(":").map(Number);
-
-                    if (h < horaAtual || (h === horaAtual && m <= minAtual)) {
-                        btn.remove();
-                    }
+            document.querySelectorAll('.mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.remove('active');
+                    mobileMenuBtn.classList.remove('active');
                 });
-            }
-
-            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-            const mobileMenu = document.getElementById('mobileMenu');
-            if (mobileMenuBtn && mobileMenu) {
-                mobileMenuBtn.addEventListener('click', function() {
-                    mobileMenu.classList.toggle('active');
-                    mobileMenuBtn.classList.toggle('active');
-                });
-
-                document.querySelectorAll('.mobile-menu a').forEach(link => {
-                    link.addEventListener('click', () => {
-                        mobileMenu.classList.remove('active');
-                        mobileMenuBtn.classList.remove('active');
-                    });
-                });
-            }
-        });
+            });
+        }
     </script>
+
 </body>
 </html>
