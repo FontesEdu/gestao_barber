@@ -1,12 +1,16 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse, HttpResponse
-from django.db import IntegrityError  # Recomendado usar o django.db
-from django.db.models import Count
-from django_ratelimit.decorators import ratelimit
 import logging
 import json
+from datetime import datetime, date, timedelta
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse, HttpResponse
+from django.db import IntegrityError 
+from django.db.models import Count
+from django_ratelimit.decorators import ratelimit
 from .models import Disponibilidade, Agendamento
 from .utils import enviar_notificacao_whatsapp
+
+# O logger precisa do import logging acima para funcionar
+logger = logging.getLogger(__name__)
 
 
 # Tela inicial onde o cliente escolhe a data
@@ -82,7 +86,6 @@ def confirmar_agendamento(request):
 
 
 # Finaliza o agendamento, com limite de 3 tentativas por dia
-logger = logging.getLogger(__name__)
 
 #@ratelimit(key='ip', rate='3/d', block=True)
 def finalizar_agendamento(request):
@@ -258,14 +261,25 @@ def ver_disponibilidade(request):
 
 def ver_horarios(request):
     data_str = request.GET.get('data')
-    hoje = date.fromisoformat(data_str) if data_str else date.today()
+    
+    try:
+        # Tenta converter a data se ela existir
+        hoje = date.fromisoformat(data_str) if data_str else date.today()
+    except (ValueError, TypeError):
+        # Se der erro no formato, volta para a data de hoje em vez de dar Erro 500
+        hoje = date.today()
 
     horarios = Disponibilidade.objects.filter(data=hoje).order_by("horario")
     agendamentos_qs = Agendamento.objects.filter(data=hoje)
     agendados_dict = {ag.horario: ag.nome for ag in agendamentos_qs}
 
+    agora = datetime.now()
+
     for h in horarios:
-        if datetime.combine(h.data, h.horario) < datetime.now():
+        # Combina data e hora para comparar com o momento atual exato
+        dt_horario = datetime.combine(h.data, h.horario)
+        
+        if dt_horario < agora:
             h.status = "passado"
             h.nome_cliente = ""
         elif h.horario in agendados_dict:
