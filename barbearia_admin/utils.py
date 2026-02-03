@@ -34,7 +34,7 @@ def enviar_notificacao_whatsapp(nome, telefone, data, horario):
 
     try:
         # Timeout de 10 segundos para não travar o Django caso a API demore
-        response = requests.post(url, json=payload, headers=headers, timeout=10)
+        response = requests.post(url, json=payload, headers=headers, timeout=30)
         
         # O Render/Evolution costuma retornar 201 (Created)
         if response.status_code in [200, 201]:
