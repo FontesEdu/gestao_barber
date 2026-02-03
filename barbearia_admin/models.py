@@ -14,7 +14,7 @@ class Agendamento(models.Model):
     nome = models.CharField(max_length=120)
     telefone = models.CharField(max_length=20)
     data = models.DateField(default=timezone.now)
-    horario = models.TimeField(default=timezone.now)
+    horario = models.TimeField()
 
     class Meta:
         unique_together = ('data', 'horario')

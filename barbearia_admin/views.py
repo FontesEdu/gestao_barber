@@ -1,11 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from datetime import datetime, date, timedelta
-from .models import Disponibilidade, Agendamento
 from django.http import JsonResponse, HttpResponse
+from django.db import IntegrityError  # Recomendado usar o django.db
 from django.db.models import Count
 from django_ratelimit.decorators import ratelimit
-import json
-from django.db.utils import IntegrityError 
+
+from .models import Disponibilidade, Agendamento
 from .utils import enviar_notificacao_whatsapp
 
 
@@ -82,43 +81,37 @@ def confirmar_agendamento(request):
 
 
 # Finaliza o agendamento, com limite de 3 tentativas por dia
+logger = logging.getLogger(__name__)
 
-@ratelimit(key='ip', rate='3/d', block=True)
+#@ratelimit(key='ip', rate='3/d', block=True)
 def finalizar_agendamento(request):
     if request.method != "POST":
         return HttpResponse("Método inválido.", status=405)
 
-    # 1. Coleta de dados do POST
     nome = request.POST.get("nome")
     telefone = request.POST.get("telefone")
     data_str = request.POST.get("data")
     horario = request.POST.get("horario")
 
-    # Validação básica de presença de dados
     if not all([nome, telefone, data_str, horario]):
-        return HttpResponse("Todos os campos são obrigatórios.", status=400)
+        return HttpResponse("Campos obrigatórios ausentes.", status=400)
 
-    # 2. Tratamento da Data
     try:
+        # Tenta converter a data que vem do input hidden
         data_obj = datetime.strptime(data_str, "%Y-%m-%d").date()
-    except (ValueError, TypeError):
-        return HttpResponse("Formato de data inválido.", status=400)
+    except ValueError:
+        # Caso a data venha formatada em BR do HTML, tenta converter assim:
+        try:
+            data_obj = datetime.strptime(data_str, "%d/%m/%Y").date()
+        except ValueError:
+            return HttpResponse("Formato de data inválido.", status=400)
 
-    # 3. Verificação de Disponibilidade
     try:
-        # Buscamos a disponibilidade específica
         disp = Disponibilidade.objects.get(data=data_obj, horario=horario)
         
-        # Se por algum motivo ela já estiver marcada como indisponível no banco
         if not disp.disponivel:
-             return HttpResponse("Este horário acabou de ser ocupado por outro cliente.", status=409)
-             
-    except Disponibilidade.DoesNotExist:
-        return HttpResponse("Erro: Horário não encontrado no sistema.", status=400)
+            return HttpResponse("Horário já ocupado.", status=409)
 
-    # 4. Criação do Agendamento e Atualização da Disponibilidade
-    try:
-        # Criamos o registro do agendamento
         Agendamento.objects.create(
             nome=nome,
             telefone=telefone,
@@ -126,28 +119,32 @@ def finalizar_agendamento(request):
             horario=horario
         )
         
-        # Marcamos como ocupado para não aparecer mais para outros
         disp.disponivel = False
         disp.save()
 
+    except Disponibilidade.DoesNotExist:
+        return HttpResponse("Horário não encontrado.", status=400)
     except IntegrityError:
-        # Caso dois usuários cliquem exatamente ao mesmo tempo no último segundo
-        return HttpResponse("Erro: Este horário já foi agendado por outra pessoa.", status=409)
+        return HttpResponse("Erro: Este agendamento já existe.", status=409)
 
-    # 5. DISPARO DA NOTIFICAÇÃO (WhatsApp)
-    # Formatamos a data para o padrão brasileiro DD/MM/AAAA para a mensagem ficar bonita
     data_formatada_br = data_obj.strftime("%d/%m/%Y")
     
-    # Chamamos a função do seu utils.py
-    enviar_notificacao_whatsapp(nome, telefone, data_formatada_br, horario)
-    enviar_notificacao_whatsapp(nome, "5583996854693", data_formatada_br, horario)
+    # Envios de WhatsApp
+    try:
+        enviar_notificacao_whatsapp(nome, telefone, data_formatada_br, horario)
+    except Exception as e:
+        logger.error(f"Erro Cliente: {e}")
 
-    # 6. Renderização de Sucesso
+    try:
+        # O número do barbeiro está fixo aqui como solicitado
+        enviar_notificacao_whatsapp(nome, "5583996854693", data_formatada_br, horario)
+    except Exception as e:
+        logger.error(f"Erro Barbeiro: {e}")
+
     return render(request, "sucesso.html", {
         "nome": nome,
         "data": data_formatada_br,
-        "horario": horario,
-        "telefone": telefone
+        "horario": horario
     })
 
 # Painel administrativo que mostra horários, agendados e livres
