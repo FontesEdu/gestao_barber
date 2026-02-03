@@ -95,61 +95,71 @@ def finalizar_agendamento(request):
     nome = request.POST.get("nome")
     telefone = request.POST.get("telefone")
     data_str = request.POST.get("data")
-    horario = request.POST.get("horario")
+    horario_str = request.POST.get("horario") # Recebido como string '09:00'
 
-    if not all([nome, telefone, data_str, horario]):
+    # 1. Validação básica de campos
+    if not all([nome, telefone, data_str, horario_str]):
         return HttpResponse("Campos obrigatórios ausentes.", status=400)
 
     try:
-        # Tenta converter a data que vem do input hidden
-        data_obj = datetime.strptime(data_str, "%Y-%m-%d").date()
-    except ValueError:
-        # Caso a data venha formatada em BR do HTML, tenta converter assim:
+        # 2. Tratamento da Data (Suporta ISO ou BR)
         try:
-            data_obj = datetime.strptime(data_str, "%d/%m/%Y").date()
+            data_obj = datetime.strptime(data_str, "%Y-%m-%d").date()
         except ValueError:
-            return HttpResponse("Formato de data inválido.", status=400)
+            data_obj = datetime.strptime(data_str, "%d/%m/%Y").date()
 
-    try:
-        disp = Disponibilidade.objects.get(data=data_obj, horario=horario)
+        # 3. Tratamento do Horário (Converte string '09:00' para objeto time)
+        # Isso evita erro de comparação no banco de dados
+        horario_obj = datetime.strptime(horario_str, "%H:%M").time()
+
+        # 4. Operação no Banco de Dados (Usando transação atômica se possível)
+        # Buscamos a disponibilidade primeiro
+        disp = Disponibilidade.objects.filter(data=data_obj, horario=horario_obj).first()
         
-        if not disp.disponivel:
-            return HttpResponse("Horário já ocupado.", status=409)
+        if not disp:
+            return HttpResponse(f"O horário {horario_str} não está cadastrado para este dia.", status=404)
 
+        if not disp.disponivel:
+            return HttpResponse("Desculpe, este horário acabou de ser preenchido por outra pessoa.", status=409)
+
+        # 5. Criar o Agendamento
         Agendamento.objects.create(
             nome=nome,
             telefone=telefone,
             data=data_obj,
-            horario=horario
+            horario=horario_obj
         )
         
+        # 6. Marcar como indisponível
         disp.disponivel = False
         disp.save()
 
-    except Disponibilidade.DoesNotExist:
-        return HttpResponse("Horário não encontrado.", status=400)
+        # Preparar data para o zap
+        data_formatada_br = data_obj.strftime("%d/%m/%Y")
+        
+        # 7. Envios de WhatsApp (Dentro de try/except para não quebrar o sucesso do cliente)
+        try:
+            # Notificação para o Cliente
+            enviar_notificacao_whatsapp(nome, telefone, data_formatada_br, horario_str)
+            # Notificação para o Barbeiro (Número fixo)
+            enviar_notificacao_whatsapp(nome, "5583996854693", data_formatada_br, horario_str)
+        except Exception as e:
+            logger.error(f"Erro ao enviar WhatsApp: {e}")
+            # Não retornamos erro aqui, pois o agendamento no banco já foi um sucesso!
+
+        return render(request, "sucesso.html", {
+            "nome": nome,
+            "data": data_formatada_br,
+            "horario": horario_str
+        })
+
     except IntegrityError:
-        return HttpResponse("Erro: Este agendamento já existe.", status=409)
-
-    data_formatada_br = data_obj.strftime("%d/%m/%Y")
-    
-    # Envios de WhatsApp
-    try:
-        enviar_notificacao_whatsapp(nome, telefone, data_formatada_br, horario)
+        logger.warning(f"Tentativa de agendamento duplicado: {nome} - {data_str}")
+        return HttpResponse("Você já possui um agendamento para este horário.", status=409)
     except Exception as e:
-        logger.error(f"Erro Cliente: {e}")
-
-    try:
-        # O número do barbeiro está fixo aqui como solicitado
-        enviar_notificacao_whatsapp(nome, "5583996854693", data_formatada_br, horario)
-    except Exception as e:
-        logger.error(f"Erro Barbeiro: {e}")
-
-    return render(request, "sucesso.html", {
-        "nome": nome,
-        "data": data_formatada_br,
-        "horario": horario
-    })
+        logger.error(f"ERRO CRÍTICO NO AGENDAMENTO: {str(e)}")
+        # Em produção, mostramos uma mensagem amigável, mas logamos o erro real
+        return HttpResponse(f"Ocorreu um erro interno. Por favor, tente novamente. (Erro: {str(e)})", status=500)
 
 # Painel administrativo que mostra horários, agendados e livres
 
@@ -157,25 +167,34 @@ def painel_adm(request, data=None):
     if data:
         hoje = datetime.strptime(data, "%Y-%m-%d").date()
     else:
-        hoje = request.GET.get("data")
-        if hoje:
-            hoje = datetime.strptime(hoje, "%Y-%m-%d").date()
+        hoje_str = request.GET.get("data")
+        if hoje_str:
+            hoje = datetime.strptime(hoje_str, "%Y-%m-%d").date()
         else:
             hoje = datetime.today().date()
 
     # Busca disponibilidades do dia
     horarios = Disponibilidade.objects.filter(data=hoje).order_by("horario")
-
     agora = datetime.now()
 
-    # Busca agendamentos do dia
-    agendamentos = Agendamento.objects.filter(data=hoje)
+    # Busca agendamentos do dia - Usamos select_related para performance
+    agendamentos = Agendamento.objects.filter(data=hoje).select_related('cliente')
     agendados_dict = {ag.horario: ag for ag in agendamentos}
 
     for h in horarios:
+        # Verifica se o horário já passou
         h.passou = datetime.combine(h.data, h.horario) < agora
-        # Adiciona cliente (ou None se não houver)
-        h.cliente = agendados_dict.get(h.horario)
+        
+        # Busca o agendamento correspondente
+        agendamento = agendados_dict.get(h.horario)
+        
+        if agendamento:
+            h.cliente = agendamento.cliente # Aqui passamos o objeto Cliente
+            # Limpa o telefone para o link wa.me (remove tudo que não é número)
+            if h.cliente.telefone:
+                h.cliente.telefone_limpo = re.sub(r'\D', '', str(h.cliente.telefone))
+        else:
+            h.cliente = None
 
     total_horarios = horarios.count()
     total_agendados = len(agendamentos)
