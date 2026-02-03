@@ -1,5 +1,6 @@
 import logging
 import json
+import re
 from datetime import datetime, date, timedelta
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponse
@@ -163,52 +164,59 @@ def finalizar_agendamento(request):
 
 # Painel administrativo que mostra horários, agendados e livres
 
+from datetime import datetime
+import re
+
 def painel_adm(request, data=None):
-    if data:
-        hoje = datetime.strptime(data, "%Y-%m-%d").date()
-    else:
-        hoje_str = request.GET.get("data")
-        if hoje_str:
-            hoje = datetime.strptime(hoje_str, "%Y-%m-%d").date()
+    try:
+        if data:
+            hoje = datetime.strptime(data, "%Y-%m-%d").date()
         else:
-            hoje = datetime.today().date()
+            hoje_str = request.GET.get("data")
+            if hoje_str:
+                hoje = datetime.strptime(hoje_str, "%Y-%m-%d").date()
+            else:
+                hoje = datetime.today().date()
 
-    # Busca disponibilidades do dia
-    horarios = Disponibilidade.objects.filter(data=hoje).order_by("horario")
-    agora = datetime.now()
+        # Busca disponibilidades do dia
+        horarios = Disponibilidade.objects.filter(data=hoje).order_by("horario")
+        agora = datetime.now()
 
-    # Busca agendamentos do dia - Usamos select_related para performance
-    agendamentos = Agendamento.objects.filter(data=hoje).select_related('cliente')
-    agendados_dict = {ag.horario: ag for ag in agendamentos}
+        # Busca agendamentos do dia
+        agendamentos = Agendamento.objects.filter(data=hoje)
+        # Criamos o dicionário mapeando o horário ao objeto Agendamento
+        agendados_dict = {ag.horario: ag for ag in agendamentos}
 
-    for h in horarios:
-        # Verifica se o horário já passou
-        h.passou = datetime.combine(h.data, h.horario) < agora
+        for h in horarios:
+            # Verifica se o horário já passou
+            h.passou = datetime.combine(h.data, h.horario) < agora
+            
+            # Pega o agendamento correspondente
+            ag = agendados_dict.get(h.horario)
+            
+            if ag:
+                # Pegamos os dados direto do Agendamento, pois seu Model é assim
+                h.cliente_nome = ag.nome 
+                # Remove espaços, parênteses e traços do telefone
+                h.cliente_telefone = re.sub(r'\D', '', str(ag.telefone))
+            else:
+                h.cliente_nome = None
+                h.cliente_telefone = None
+
+        total_horarios = horarios.count()
+        total_agendados = len(agendamentos)
+
+        return render(request, "admin/painel_adm.html", {
+            "hoje": hoje,
+            "horarios": horarios,
+            "total_horarios": total_horarios,
+            "total_agendados": total_agendados,
+            "total_livres": total_horarios - total_agendados
+        })
+    except Exception as e:
+        print(f"Erro no Painel ADM: {e}")
+        raise e
         
-        # Busca o agendamento correspondente
-        agendamento = agendados_dict.get(h.horario)
-        
-        if agendamento:
-            h.cliente = agendamento.cliente # Aqui passamos o objeto Cliente
-            # Limpa o telefone para o link wa.me (remove tudo que não é número)
-            if h.cliente.telefone:
-                h.cliente.telefone_limpo = re.sub(r'\D', '', str(h.cliente.telefone))
-        else:
-            h.cliente = None
-
-    total_horarios = horarios.count()
-    total_agendados = len(agendamentos)
-    total_livres = total_horarios - total_agendados
-
-    return render(request, "admin/painel_adm.html", {
-        "hoje": hoje,
-        "horarios": horarios,
-        "total_horarios": total_horarios,
-        "total_agendados": total_agendados,
-        "total_livres": total_livres
-    })
-
-
 
 # Remove um horário específico
 def remover_horario(request, id):
