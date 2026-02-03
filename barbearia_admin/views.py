@@ -3,7 +3,8 @@ from django.http import JsonResponse, HttpResponse
 from django.db import IntegrityError  # Recomendado usar o django.db
 from django.db.models import Count
 from django_ratelimit.decorators import ratelimit
-
+import logging
+import json
 from .models import Disponibilidade, Agendamento
 from .utils import enviar_notificacao_whatsapp
 
