@@ -83,7 +83,7 @@ def confirmar_agendamento(request):
 
 # Finaliza o agendamento, com limite de 3 tentativas por dia
 
-@ratelimit(key='ip', rate='3/d', block=True)
+# @ratelimit(key='ip', rate='3/d', block=True)
 def finalizar_agendamento(request):
     if request.method != "POST":
         return HttpResponse("Método inválido.", status=405)
