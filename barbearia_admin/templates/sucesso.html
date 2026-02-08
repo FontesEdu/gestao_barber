@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agendamento Confirmado - Estação Barber</title>
+    <title>Agendamento Confirmado | Estação Barber</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -11,365 +12,251 @@
             box-sizing: border-box;
         }
 
-        /* ================= NAVBAR ================== */
-        body {
-            margin: 0;
-            font-family: 'Poppins', sans-serif;
+        :root {
+            --color-bg-dark: #0a1128;
+            --color-bg-card: #131b35;
+            --color-bg-secondary: #1a2447;
+            --color-text-primary: #f9fafb;
+            --color-text-secondary: #a0a8bd;
+            --color-primary: #f59e0b;
+            --color-primary-dark: #d97706;
+            --color-border: #1f2a4d;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+        }
 
-            /* Imagem de fundo */
-            background-image: url("../../static/img/image01.png");
-            background-repeat: no-repeat;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            /* Imagem de fundo com overlay conforme o original */
+            background-image: linear-gradient(rgba(10, 17, 40, 0.85), rgba(10, 17, 40, 0.85)), url("../../static/img/image01.png");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-
-            /* A sobreposição escura */
-            position: relative;
         }
 
-        body::before {
-            content: "";
+        /* ================= NAVIGATION (3 BLOCOS SEPARADOS) ================== */
+        .navbar {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-
-            /* Aqui está o segredo */
-            background: rgba(0, 10, 30, 0.70);  
-            /* 70% de escuridão com leve azul marinho */
-
-            z-index: -1;  /* fica atrás do conteúdo */
-        }
-        .logo{
-            color: white;
+            right: 0;
+            z-index: 50;
+            background-color: rgba(10, 17, 40, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--color-border);
         }
 
-        /* ======== NAVBAR ======== */
-        .navbar {
-            width: 100%;
-            padding: 30px 60px;
-            background: #0B1224;
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--spacing-sm) var(--spacing-lg);
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            top: 0;
-            z-index: 10;
         }
 
-        /* LOGO + NOME */
-        .navbar-left {
-            display: flex;
-            align-items: center;
-        }
-
-        .navbar-left img {
-            width: 26px;
-            margin-right: 10px;
-        }
-
-        .navbar-left span {
-            font-size: 22px;
-            font-weight: 600;
-            color: white;
-        }
-
-        /* LINKS */
-        .navbar-links {
-            display: flex;
-            gap: 35px;
+        /* Lado Esquerdo */
+        .nav-brand { flex: 1; display: flex; align-items: center; }
+        .nav-title a {
             text-decoration: none;
-        }
-
-        .navbar-links a {
-            text-decoration: none;
-            font-size: 17px;
-            color: #d6d6d6;
-            transition: 0.3s;
-        }
-
-        .navbar-links a:hover {
-            color: #ffffff;
-        }
-
-        /* BOTÃO */
-        .btn-agendar {
-            padding: 10px 22px;
-            background: #F7A41D;
-            color: #0B1224;
-            border-radius: 10px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: 0.3s;
-            margin-left: 300px;
-        }
-
-        .btn-agendar:hover {
-            background: #ffb733;
-        }
-
-        a{
-            margin: 26px;
-        }
-
-        .container {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 40px 30px;
-            width: 100%;
-            max-width: 500px;
-            text-align: center;
-
-            margin: 140px auto 50px auto;
-        }
-
-        .logo {
-            font-size: 24px;
+            color: var(--color-text-primary);
+            font-size: 1.25rem;
             font-weight: 700;
-            color: #ffa500;
-            letter-spacing: 1px;
         }
 
-        /* Hero Section */
-        .hero {
-            color: white;
-            padding: 100px 20px;
-            text-align: center;
-            min-height: 60vh;
+        /* Centro */
+        .nav-links {
+            display: none;
+            list-style: none;
+            gap: 3rem; /* Espaçamento largo conforme imagem */
+            flex: 2;
+            justify-content: center;
+        }
+        .nav-links a {
+            color: var(--color-text-primary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: 0.3s;
+        }
+        .nav-links a:hover { color: var(--color-primary); }
+
+        /* Lado Direito */
+        .nav-actions { flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 1rem; }
+
+        .btn-nav {
+            padding: 0.625rem 1.5rem;
+            background-color: var(--color-primary);
+            color: var(--color-bg-dark);
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        /* Menu Mobile Button */
+        .mobile-menu-btn {
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
         }
-
-        .hero h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-            line-height: 1.2;
-            font-weight: 700;
+        .mobile-menu-btn span {
+            width: 24px;
+            height: 2px;
+            background-color: var(--color-text-primary);
+            transition: 0.3s;
         }
+        .mobile-menu-btn.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .mobile-menu-btn.active span:nth-child(2) { opacity: 0; }
+        .mobile-menu-btn.active span:nth-child(3) { transform: rotate(-45deg) translate(4px, -4px); }
 
-        .hero p {
-            font-size: 18px;
-            margin-bottom: 40px;
-            max-width: 600px;
-            opacity: 0.95;
+        /* Mobile Overlay */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            background-color: var(--color-bg-card);
+            flex-direction: column;
+            padding: var(--spacing-md);
+            z-index: 40;
+            border-bottom: 1px solid var(--color-border);
         }
+        .mobile-menu.active { display: flex; }
+        .mobile-menu a { color: white; text-decoration: none; padding: 1rem; border-bottom: 1px solid var(--color-border); }
 
-        /* Confirmação Card */
-        .confirmacao-container {
-            max-width: 600px;
-            margin: -60px auto 80px;
-            padding: 40px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-            position: relative;
-            z-index: 10;
-        }
-
-        .confirmacao-header {
+        /* ================= CONTEÚDO DE CONFIRMAÇÃO ================== */
+        .hero {
+            padding: 140px 20px 60px;
             text-align: center;
-            margin-bottom: 30px;
+        }
+        .hero h1 { font-size: 2.5rem; color: var(--color-primary); margin-bottom: 10px; }
+        .hero p { color: var(--color-text-secondary); font-size: 1.1rem; }
+
+        .confirmacao-card {
+            max-width: 550px;
+            margin: 0 auto 80px;
+            background-color: var(--color-bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
+            padding: var(--spacing-lg);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
-        .confirmacao-icon {
-            font-size: 64px;
-            margin-bottom: 16px;
-            display: inline-block;
-        }
+        .confirmacao-header { text-align: center; margin-bottom: 2rem; }
+        .confirmacao-icon { font-size: 4rem; margin-bottom: 1rem; }
 
-        .confirmacao-header h2 {
-            font-size: 28px;
-            color: #1a1a1a;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-
-        .confirmacao-header p {
-            font-size: 16px;
-            color: #666;
+        .confirmacao-mensagem {
+            background-color: rgba(76, 175, 80, 0.1);
+            border-left: 4px solid #4caf50;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            color: #81c784;
+            font-size: 0.9rem;
         }
 
         .confirmacao-detalhes {
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            border-left: 4px solid #667eea;
+            background-color: var(--color-bg-secondary);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 2rem;
         }
 
         .detalhe-item {
-            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 0.5rem;
         }
+        .detalhe-item:last-child { border: none; }
+        .detalhe-label { color: var(--color-text-secondary); font-size: 0.85rem; text-transform: uppercase; }
+        .detalhe-valor { font-weight: 700; color: var(--color-text-primary); }
 
-        .detalhe-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .detalhe-label {
-            font-size: 14px;
-            color: #666;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .detalhe-valor {
-            font-size: 18px;
-            color: #1a1a1a;
-            font-weight: 700;
-        }
-
-        .confirmacao-mensagem {
-            background: #e8f5e9;
-            border-left: 4px solid #4caf50;
-            padding: 16px;
-            border-radius: 4px;
-            margin-bottom: 30px;
-        }
-
-        .confirmacao-mensagem p {
-            font-size: 14px;
-            color: #2e7d32;
-        }
-
-        .botao-voltar {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 16px 40px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-            border: none;
-            cursor: pointer;
+        .btn-voltar {
+            display: block;
             width: 100%;
+            padding: 1.25rem;
+            background-color: var(--color-primary);
+            color: var(--color-bg-dark);
             text-align: center;
+            text-decoration: none;
+            font-weight: 700;
+            border-radius: var(--radius-md);
+            transition: 0.3s;
         }
-
-        .botao-voltar:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-
-        .botao-voltar:active {
-            transform: translateY(0);
-        }
+        .btn-voltar:hover { background-color: var(--color-primary-dark); transform: translateY(-2px); }
 
         /* Footer */
         footer {
-            background: #0a0a0a;
-            color: #666;
+            padding: 2rem;
             text-align: center;
-            padding: 30px 20px;
-            border-top: 1px solid #333;
+            border-top: 1px solid var(--color-border);
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
         }
 
-        /* Responsivo */
-        @media (max-width: 768px) {
-            .hero {
-                padding: 60px 20px;
-                min-height: auto;
-            }
-
-            .hero h1 {
-                font-size: 36px;
-            }
-
-            .hero p {
-                font-size: 16px;
-            }
-
-            .confirmacao-container {
-                margin: -40px 20px 60px;
-                padding: 30px 20px;
-            }
-
-            .confirmacao-header h2 {
-                font-size: 24px;
-            }
-
-            .detalhe-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .hero {
-                padding: 40px 20px;
-                min-height: auto;
-            }
-
-            .hero h1 {
-                font-size: 28px;
-                margin-bottom: 16px;
-            }
-
-            .hero p {
-                font-size: 14px;
-                margin-bottom: 30px;
-            }
-
-            .confirmacao-container {
-                margin: -30px 16px 40px;
-                padding: 24px 16px;
-            }
-
-            .confirmacao-header h2 {
-                font-size: 20px;
-            }
-
-            .confirmacao-header .confirmacao-icon {
-                font-size: 48px;
-            }
-
-            .confirmacao-detalhes {
-                padding: 20px;
-            }
-
-            .detalhe-label {
-                font-size: 12px;
-            }
-
-            .detalhe-valor {
-                font-size: 16px;
-            }
-
-            .botao-voltar {
-                padding: 14px 24px;
-                font-size: 14px;
-            }
+        /* Responsividade */
+        @media (min-width: 768px) {
+            .nav-links { display: flex; }
+            .mobile-menu-btn { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Hero Section -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="nav-title"><a href="/">Estação Barber</a></span>
+            </div>
+            
+            <ul class="nav-links">
+                <li><a href="/">Início</a></li>
+                <li><a href="#sobre">Sobre</a></li>
+                <li><a href="#servicos">Serviços</a></li>
+                <li><a href="#contatos">Contatos</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <a href="/" class="btn-nav">Agendar Horário</a>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="/">Início</a>
+        <a href="#sobre">Sobre</a>
+        <a href="#servicos">Serviços</a>
+        <a href="#contatos">Contatos</a>
+    </div>
+
     <section class="hero">
         <h1>Agendamento Confirmado!</h1>
-        <p>Sua reserva foi registrada com sucesso</p>
+        <p>Sua vaga está garantida na Estação Barber.</p>
     </section>
 
-    <!-- Confirmação Card -->
-    <div class="confirmacao-container">
+    <div class="confirmacao-card">
         <div class="confirmacao-header">
-            <div class="confirmacao-icon">🎉</div>
+            <div class="confirmacao-icon">✨</div>
             <h2>Obrigado, {{ nome }}!</h2>
-            <p>Seu agendamento foi confirmado</p>
         </div>
 
         <div class="confirmacao-mensagem">
-            <p>✓ Sua reserva está confirmada. Chegue 5 minutos antes do horário marcado.</p>
+            <p>✓ Sua reserva foi registrada. Chegue 5 minutos antes para evitar atrasos.</p>
         </div>
 
         <div class="confirmacao-detalhes">
@@ -387,12 +274,23 @@
             </div>
         </div>
 
-        <a href="/" class="botao-voltar">Voltar à Página Inicial</a>
+        <a href="/" class="btn-voltar">Voltar ao Início</a>
     </div>
 
-    <!-- Footer -->
     <footer>
-        <p>&copy; 2025 Estação Barber. Todos os direitos reservados.</p>
+        <p>&copy; 2026 Estação Barber. Todos os direitos reservados.</p>
     </footer>
+
+    <script>
+        $(document).ready(function(){
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('active');
+                mobileMenuBtn.classList.toggle('active');
+            });
+        });
+    </script>
 </body>
 </html>

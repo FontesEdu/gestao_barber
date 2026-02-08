@@ -11,7 +11,11 @@ SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-vm%8=esubp9d*n3d$90gjf*lrq
 # No Render, DEBUG deve ser False. Em desenvolvimento local, True.
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ["gestao-barber.onrender.com", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = [
+            "gestao-barber.onrender.com", 
+            "localhost", 
+            "127.0.0.1"
+                ]
 
 # APPS
 INSTALLED_APPS = [
@@ -97,7 +101,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # CSRF
 CSRF_TRUSTED_ORIGINS = [
     "https://gestao-barber.onrender.com",
-    "http://localhost:8000"
+    "http://localhost:8000",
+    'http://127.0.0.1:8000',
 ]
 
 # CONFIGURAÇÕES DA EVOLUTION API (Lendo do Render Environment)
